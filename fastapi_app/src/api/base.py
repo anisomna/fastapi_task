@@ -1,6 +1,9 @@
 from fastapi import APIRouter, status, HTTPException
-
-from schemas.posts import PostRequestSchema, PostResponseSchema
+from schemas.users import User
+from schemas.posts import Post
+from schemas.comments import Comment
+from schemas.locations import Location
+from schemas.categories import Category
 
 
 router = APIRouter()
@@ -13,8 +16,8 @@ async def get_hello_world() -> dict:
     return response
 
 
-@router.post("/test_json", status_code=status.HTTP_201_CREATED, response_model=PostResponseSchema)
-async def test_json(post: PostRequestSchema) -> dict:
+@router.post("/create_post", status_code=status.HTTP_201_CREATED, response_model=Post)
+async def create_post(post: Post) -> dict:
     if len(post.text) < 3:
         raise HTTPException(
             detail="Длина поста должна быть не меньше 3 символов",
@@ -26,4 +29,21 @@ async def test_json(post: PostRequestSchema) -> dict:
         "author_name": post.author.login
     }
 
-    return PostResponseSchema.model_validate(obj=response)
+    return Post.model_validate(obj=response)
+
+
+@router.put("/update_post", status_code=status.HTTP_200_OK)
+async def update_post(updated_post: Post) -> dict:
+    if len(updated_post.text) < 3:
+        raise HTTPException(
+            detail="Длина поста должна быть не меньше 3 символов",
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+        )
+    
+    return {
+        "message": "Информация успешно обновлена!",
+        "updated_post": Post.model_validate({
+            "post_text": updated_post.text,
+            "author_name": updated_post.author.login
+        })
+    }
