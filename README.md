@@ -8,5 +8,5 @@
    - pip install fastapi
    - pip install uvicorn
  - нажать правой кнопкой на папку `src`
-   - выберать `Mark Directory as` -> `Source Root`
+   - выбрать `Mark Directory as` -> `Source Root`
  - запустить файл main.py (fastapi dev main.py)
