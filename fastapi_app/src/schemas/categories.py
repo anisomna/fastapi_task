@@ -3,6 +3,7 @@ from datetime import datetime
 
 
 class Category(BaseModel):
+    id: int
     title: str = Field(..., description='Заголовок', max_length=256)
     description: str = Field(description='Описание')
     slug: str = Field(..., description='Идентификатор страницы для URL')

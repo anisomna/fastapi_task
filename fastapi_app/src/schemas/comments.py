@@ -5,6 +5,7 @@ from schemas.users import User
 
 
 class Comment(BaseModel):
+    id: int
     text: str = Field(..., description='Текст комментария')
     created_at: datetime = Field(description='Добавлено')
     post: Post = Field(description='Публикация')
