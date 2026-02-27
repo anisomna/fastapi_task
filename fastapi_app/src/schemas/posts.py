@@ -6,6 +6,7 @@ from schemas.categories import Category
 
 
 class Post(BaseModel):
+    id: int
     title: str = Field(..., description='Заголовок', max_length=256)
     text: str = Field(..., description='Текст')
     pub_date: datetime = Field(
