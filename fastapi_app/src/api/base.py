@@ -48,7 +48,7 @@ async def update_post(updated_post: Post) -> dict:
         })
     }
 
-@app.delete("/delete_post", status_code=status.HTTP_200_OK)
+@router.delete("/delete_post", status_code=status.HTTP_200_OK)
 async def delete_post(post: Post):
     # check to delete post
     if check:
