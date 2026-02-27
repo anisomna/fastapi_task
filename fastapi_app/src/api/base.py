@@ -47,3 +47,11 @@ async def update_post(updated_post: Post) -> dict:
             "author_name": updated_post.author.login
         })
     }
+
+@app.delete("/delete_post", status_code=status.HTTP_200_OK)
+async def delete_post(post: Post):
+    # check to delete post
+    if check:
+        return {"message": "Публикация успешно удалена!"}
+    else:
+        raise HTTPException(status_code=400, detail="Ошибка при удалении публикации")
