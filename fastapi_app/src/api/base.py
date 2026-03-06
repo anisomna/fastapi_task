@@ -24,12 +24,7 @@ async def create_post(post: Post) -> dict:
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
         )
 
-    response = {
-        "post_text": post.text,
-        "author_name": post.author.login
-    }
-
-    return Post.model_validate(obj=response)
+    return post
 
 
 @router.put("/update_post", status_code=status.HTTP_200_OK)
@@ -49,9 +44,10 @@ async def update_post(updated_post: Post) -> dict:
     }
 
 @router.delete("/delete_post", status_code=status.HTTP_200_OK)
-async def delete_post(post: Post):
+async def delete_post(post: Post, post_id):
     # check to delete post
-    if check:
+    if (post_id == post.id):
+        # delete post
         return {"message": "Публикация успешно удалена!"}
     else:
         raise HTTPException(status_code=400, detail="Ошибка при удалении публикации")
