@@ -8,6 +8,10 @@ class PostRepository:
     def __init__(self):
         self._model: Type[Post] = Post
 
+    def get_all_posts(self, session: Session) -> List[Post]:
+        query = session.query(self._model)
+        return query.all()
+
     def get_published_posts(self, session: Session, limit: int = 10) -> List[Post]:
         query = (
             session.query(self._model)
@@ -32,10 +36,11 @@ class PostRepository:
         return query.all()
 
     def create_post(self, session: Session, title: str, text: str,
-                   pub_date: datetime, author_id: int, is_published: bool,
+                   pub_date: datetime, author_id: int,
                    location_id: int | None = None,
                    category_id: int | None = None,
-                   image: int | None = None) -> Post:
+                   image: int | None = None,
+                   is_published: bool = True) -> Post:
         post = Post(
             title=title,
             text=text,
