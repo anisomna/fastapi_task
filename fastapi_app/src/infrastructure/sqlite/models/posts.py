@@ -1,7 +1,6 @@
 from infrastructure.sqlite.database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, Text, DateTime, Boolean, ForeignKey
-from sqlalchemy.orm import relationship, Mapped, mapped_column
 from datetime import datetime
 from .categories import Category
 from .comments import Comment
