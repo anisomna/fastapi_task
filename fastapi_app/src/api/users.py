@@ -68,7 +68,7 @@ async def delete_user(
     try:
         result = await use_case.execute(user_id=user_id)
         if result:
-            return {"message": f"Пользователь успешно удален"}
+            return {"message": "Пользователь успешно удален"}
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
