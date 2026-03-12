@@ -2,8 +2,6 @@ from infrastructure.sqlite.database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Text, DateTime, ForeignKey
 from datetime import datetime
-from .posts import Post
-from .users import User
 
 
 class Comment(Base):
@@ -31,5 +29,5 @@ class Comment(Base):
         default=datetime.now
     )
 
-    post: Mapped["Post"] = relationship(back_populates="comments")
-    author: Mapped["User"] = relationship(back_populates="comments")
+    posts = relationship("Post", back_populates="comments")
+    author = relationship("User", back_populates="comments")

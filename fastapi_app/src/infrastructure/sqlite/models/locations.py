@@ -2,7 +2,6 @@ from infrastructure.sqlite.database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, Boolean, DateTime
 from datetime import datetime
-from .posts import Post
 
 
 class Location(Base):
@@ -27,4 +26,4 @@ class Location(Base):
         default=datetime.now
     )
 
-    posts: Mapped["Post"] = relationship(back_populates="location")
+    posts = relationship("Post", back_populates="location")

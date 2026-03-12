@@ -2,9 +2,6 @@ from infrastructure.sqlite.database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, Text, DateTime, Boolean, ForeignKey
 from datetime import datetime
-from .categories import Category
-from .comments import Comment
-from .users import User
 
 
 class Post(Base):
@@ -52,7 +49,7 @@ class Post(Base):
         nullable=True
     )
 
-    author: Mapped["User"] = relationship(back_populates="posts")
-    location: Mapped["Location"] = relationship(back_populates="posts")
-    category: Mapped["Category"] = relationship(back_populates="posts")
-    comments: Mapped["Comment"] = relationship(back_populates="posts")
+    author = relationship("User", back_populates="posts")
+    location = relationship("Location", back_populates="posts")
+    category = relationship("Category", back_populates="posts")
+    comments = relationship("Comment", back_populates="posts")

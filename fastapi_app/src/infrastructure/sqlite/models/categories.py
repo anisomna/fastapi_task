@@ -35,4 +35,4 @@ class Category(Base):
         default=datetime.now
     )
 
-    posts: Mapped["Post"] = relationship(back_populates="category")
+    posts = relationship("Post", back_populates="category")
