@@ -22,7 +22,7 @@ from domain.location.use_cases.delete_location import DeleteLocationUseCase
 
 from domain.category.use_cases.get_all_categories import GetAllCategoriesUseCase
 from domain.category.use_cases.get_category_by_id import GetCategoryByIdUseCase
-from domain.category.use_cases.get_published import GetPublishedCategoriesUseCase
+from domain.category.use_cases.get_published_categories import GetPublishedCategoriesUseCase
 
 
 def get_get_user_by_id_use_case() -> GetUserByIdUseCase:
