@@ -29,8 +29,8 @@ class UserRepository:
         return query.scalar()
 
     def create_user(self, session:Session, login: str, email: str,
-        password: str, first_name: str | None = None,
-        last_name: str | None = None) -> User:
+                    password: str, first_name: str | None = None,
+                    last_name: str | None = None) -> User:
         user = User(
             login=login,
             email=email,
