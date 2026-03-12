@@ -13,9 +13,6 @@ from api.depends import (
 
 locations_router = APIRouter()
 
-locations = []
-next_id = 1
-
 @locations_router.get("/", status_code=status.HTTP_200_OK, response_model=List[Location])
 async def get_all_locations(use_case = Depends(get_get_all_locations_use_case)) -> List[Location]:
     locations = await use_case.execute()
