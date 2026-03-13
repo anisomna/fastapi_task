@@ -1,7 +1,7 @@
 from typing import Type, List
 from datetime import datetime
 from sqlalchemy.orm import Session
-from src.infrastructure.sqlite.models import Comment
+from infrastructure.sqlite.models.comments import Comment
 
 
 class CommentRepository:

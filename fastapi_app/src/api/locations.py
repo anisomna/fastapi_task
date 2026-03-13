@@ -33,7 +33,7 @@ async def get_location_by_id(
         )
 
 
-@locations_router.location("/add_location", status_code=status.HTTP_201_CREATED, response_model=Location)
+@locations_router.post("/add_location", status_code=status.HTTP_201_CREATED, response_model=Location)
 async def create_location(
     name: str, is_published: bool,
     use_case = Depends(get_create_location_use_case)) -> Location:

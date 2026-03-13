@@ -6,9 +6,7 @@ from schemas.categories import Category
 
 from api.depends import (
     get_get_all_categories_use_case,
-    get_get_category_by_id_use_case,
-    get_create_category_use_case,
-    get_delete_category_use_case
+    get_get_category_by_id_use_case
 )
 
 categories_router = APIRouter()

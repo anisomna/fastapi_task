@@ -3,11 +3,10 @@ from domain.user.use_cases.get_user_by_login import GetUserByLoginUseCase
 from domain.user.use_cases.create_user import CreateUserUseCase
 from domain.user.use_cases.delete_user import DeleteUserUseCase
 
-from domain.posts.use_cases.get_all_posts import GetAllPostsUseCase
-from domain.posts.use_cases.get_post_by_id import GetPostByIdUseCase
-from domain.posts.use_cases.get_published_posts import GetPublishedPostsUseCase
-from domain.posts.use_cases.create_post import CreatePostUseCase
-from domain.posts.use_cases.delete_post import DeletePostUseCase
+from domain.post.use_cases.get_all_posts import GetAllPostsUseCase
+from domain.post.use_cases.get_post_by_id import GetPostByIdUseCase
+from domain.post.use_cases.create_post import CreatePostUseCase
+from domain.post.use_cases.delete_post import DeletePostUseCase
 
 from domain.comments.use_cases.get_all_comments import GetAllCommentsUseCase
 from domain.comments.use_cases.get_comment_by_id import GetCommentByIdUseCase
@@ -43,9 +42,6 @@ def get_get_all_posts_use_case() -> GetAllPostsUseCase:
 
 def get_get_post_by_id_use_case() -> GetPostByIdUseCase:
     return GetPostByIdUseCase()
-
-def get_published_posts_use_case() -> GetPublishedPostsUseCase:
-    return GetPublishedPostsUseCase()
 
 def get_create_post_use_case() -> CreatePostUseCase:
     return CreatePostUseCase()

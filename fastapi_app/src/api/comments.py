@@ -33,7 +33,7 @@ async def get_comment_by_id(
         )
 
 
-@comments_router.comment("/create_comment", status_code=status.HTTP_201_CREATED, response_model=Comment)
+@comments_router.post("/create_comment", status_code=status.HTTP_201_CREATED, response_model=Comment)
 async def create_comment(
     text: str, post_id: int, author_id: int,
     use_case = Depends(get_create_comment_use_case)) -> Comment:

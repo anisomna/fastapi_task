@@ -1,6 +1,6 @@
 from typing import Type, List
 from sqlalchemy.orm import Session
-from src.infrastructure.sqlite.models import Category
+from infrastructure.sqlite.models.categories import Category
 
 
 class CategoryRepository:

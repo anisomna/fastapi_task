@@ -1,7 +1,7 @@
 from typing import Type, List
 from datetime import datetime
 from sqlalchemy.orm import Session
-from src.infrastructure.sqlite.models import Post
+from infrastructure.sqlite.models.posts import Post
 
 
 class PostRepository:
