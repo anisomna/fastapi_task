@@ -9,10 +9,10 @@ class DeletePostUseCase:
 
     async def execute(self, post_id: int) -> bool:
         with self._database.session() as session:
-            post = self._repo.get_by_id(session, post_id)
+            post = self._repo.get_post_by_id(session, post_id)
 
             if not post:
                 raise ValueError("Не удалось найти пост")
 
-            result = self._repo.delete(session, post_id)
+            result = self._repo.delete_post(session, post_id)
             return result

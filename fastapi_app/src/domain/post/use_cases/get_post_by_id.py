@@ -10,7 +10,7 @@ class GetPostByIdUseCase:
 
     async def execute(self, post_id: int) -> PostSchema:
         with self._database.session() as session:
-            post = self._repo.get_by_id(session, post_id)
+            post = self._repo.get_post_by_id(session, post_id)
 
             if not post:
                 raise ValueError("Не удалось найти пост")

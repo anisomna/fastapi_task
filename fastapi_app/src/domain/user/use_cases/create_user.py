@@ -11,11 +11,17 @@ class CreateUserUseCase:
 
     async def execute(self, data: UserCreate) -> UserCreate:
         with self._database.session() as session:
-            existing = self._repo.get_user_by_login(session, data.login)
-            if existing:
+            existing_login = self._repo.get_user_by_login(session, data.login)
+            existing_email = self._repo.get_user_by_email(session, data.email)
+            if existing_login:
                 raise HTTPException(
                     status_code=status.HTTP_409_CONFLICT,
                     detail="Пользователь с таким логином уже существует"
+                )
+            if existing_email:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="Пользователь с такой почтой уже существует"
                 )
 
             user = UserModel(

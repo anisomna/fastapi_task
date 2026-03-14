@@ -24,7 +24,7 @@ class CreatePostUseCase:
             if not author:
                 raise ValueError("Автор не найден")
 
-            post = self._repo.create(
+            post = self._repo.create_post(
                 session=session,
                 title=title,
                 text=text,

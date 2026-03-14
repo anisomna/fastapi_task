@@ -40,7 +40,7 @@ async def get_user_by_login(
             detail=str(e)
         )
 
-@users_router.post("/user", status_code=status.HTTP_200_OK, response_model=User)
+@users_router.post("/register", status_code=status.HTTP_200_OK, response_model=User)
 async def create_user(
     data: UserCreate,
     use_case = Depends(get_create_user_use_case)) -> User:
