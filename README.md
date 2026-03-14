@@ -5,8 +5,9 @@
    - python -m venv venv
    - source venv/Scripts/activate
  - в терминале прописать
-   - pip install fastapi
+   - pip install "fastapi[standard]"
    - pip install uvicorn
+   - pip install sqlalchemy
  - нажать правой кнопкой на папку `src`
    - выбрать `Mark Directory as` -> `Source Root`
  - запустить файл main.py (fastapi dev main.py)
