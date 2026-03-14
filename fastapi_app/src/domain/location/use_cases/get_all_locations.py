@@ -11,7 +11,7 @@ class GetAllLocationsUseCase:
 
     async def execute(self) -> List[LocationSchema]:
         with self._database.session() as session:
-            locations = self._repo.get_all(session)
+            locations = self._repo.get_all_locations(session)
 
             result = []
             for location in locations:

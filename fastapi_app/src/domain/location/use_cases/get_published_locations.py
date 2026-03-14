@@ -11,7 +11,7 @@ class GetPublishedLocationsUseCase:
 
     async def execute(self) -> List[LocationSchema]:
         with self._database.session() as session:
-            locations = self._repo.get_published(session)
+            locations = self._repo.get_published_locations(session)
 
             result = []
             for location in locations:

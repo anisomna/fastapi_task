@@ -40,8 +40,7 @@ async def create_location(
     try:
         location = await use_case.execute(
             name=name,
-            is_published=is_published,
-            created_at=datetime.now()
+            is_published=is_published
         )
         return location
     except ValueError as e:

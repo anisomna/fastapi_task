@@ -51,8 +51,7 @@ async def create_post(
             author_id=author_id,
             location_id=location_id,
             category_id=category_id,
-            image=image,
-            created_at=datetime.now()
+            image=image
         )
         return post
     except ValueError as e:

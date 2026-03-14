@@ -10,7 +10,7 @@ class GetCategoryByIdUseCase:
 
     async def execute(self, category_id: int) -> CategorySchema:
         with self._database.session() as session:
-            category = self._repo.get_by_id(session, category_id)
+            category = self._repo.get_category_by_id(session, category_id)
 
             if not category:
                 raise ValueError("Категория не найдена")

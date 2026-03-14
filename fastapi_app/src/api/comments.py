@@ -41,8 +41,7 @@ async def create_comment(
         comment = await use_case.execute(
             text=text,
             post_id=post_id,
-            author_id=author_id,
-            created_at=datetime.now()
+            author_id=author_id
         )
         return comment
     except ValueError as e:

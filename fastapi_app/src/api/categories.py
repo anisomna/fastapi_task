@@ -6,7 +6,9 @@ from schemas.categories import Category
 
 from api.depends import (
     get_get_all_categories_use_case,
-    get_get_category_by_id_use_case
+    get_get_category_by_id_use_case,
+    get_create_category_use_case,
+    get_delete_category_use_case
 )
 
 categories_router = APIRouter()
@@ -28,4 +30,36 @@ async def get_category_by_id(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Категория не найдена"
+        )
+
+@categories_router.post("/add_category", status_code=status.HTTP_201_CREATED, response_model=Category)
+async def create_category(
+    title: str, description: str, slug: str, is_published: bool,
+    use_case = Depends(get_create_category_use_case)) -> Category:
+    try:
+        category = await use_case.execute(
+            title=title,
+            description=description,
+            slug=slug,
+            is_published=is_published
+        )
+        return category
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+
+
+@categories_router.delete("/delete/{category_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_category(
+    category_id: int,
+    use_case = Depends(get_delete_category_use_case)):
+    try:
+        await use_case.execute(category_id=category_id)
+        return
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
         )

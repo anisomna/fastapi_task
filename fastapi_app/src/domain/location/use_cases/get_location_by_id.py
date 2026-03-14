@@ -10,7 +10,7 @@ class GetLocationByIdUseCase:
 
     async def execute(self, location_id: int) -> LocationSchema:
         with self._database.session() as session:
-            location = self._repo.get_by_id(session, location_id)
+            location = self._repo.get_location_by_id(session, location_id)
 
             if not location:
                 raise ValueError("Место не найдено")

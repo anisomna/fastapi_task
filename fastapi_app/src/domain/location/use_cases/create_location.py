@@ -10,7 +10,7 @@ class CreateLocationUseCase:
 
     async def execute(self, name: str, is_published: bool = True) -> LocationSchema:
         with self._database.session() as session:
-            location = self._repo.create(
+            location = self._repo.create_location(
                 session=session,
                 name=name,
                 is_published=is_published
