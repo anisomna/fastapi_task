@@ -2,9 +2,19 @@ from pydantic import BaseModel, SecretStr, Field, EmailStr
 
 
 class User(BaseModel):
-    id: int
-    email: EmailStr
     login: str
+    email: EmailStr
     first_name: str = Field(max_length=30)
     last_name: str = Field(max_length=30)
-    password: SecretStr
+
+
+class UserCreate(User):
+    password: str = Field(min_length=8)
+
+
+class UserResponse(User):
+    id: int
+    login: str
+    email: EmailStr
+    first_name: str
+    last_name: str

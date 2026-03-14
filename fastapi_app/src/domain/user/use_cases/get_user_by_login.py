@@ -1,7 +1,6 @@
 from infrastructure.sqlite.database import database
 from infrastructure.sqlite.repositories.users import UserRepository
 from schemas.users import User as UserSchema
-from pydantic.types import SecretStr
 
 
 class GetUserByLoginUseCase:
@@ -13,16 +12,10 @@ class GetUserByLoginUseCase:
         with self._database.session() as session:
             user = self._repo.get_user_by_login(session, login)
 
-            if not user:
-                raise ValueError("Пользователь не найден")
+            if user is None:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Пользователь не найден"
+                )
 
-            user_dict = {
-                "id": user.id,
-                "login": user.login,
-                "email": user.email,
-                "password": SecretStr(user.password),
-                "first_name": user.first_name,
-                "last_name": user.last_name
-            }
-
-            return UserSchema.model_validate(obj=user_dict)
+            return UserSchema.model_validate(obj=user)

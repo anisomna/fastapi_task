@@ -28,17 +28,7 @@ class UserRepository:
         )
         return query.scalar()
 
-    def create_user(self, session:Session, login: str, email: str,
-                    password: str, first_name: str | None = None,
-                    last_name: str | None = None) -> User:
-        user = User(
-            login=login,
-            email=email,
-            password=password,
-            first_name=first_name,
-            last_name=last_name
-        )
-
+    def create_user(self, session: Session, user: User) -> User:
         session.add(user)
         session.flush()
         return user

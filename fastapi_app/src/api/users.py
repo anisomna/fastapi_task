@@ -1,7 +1,7 @@
 from fastapi import APIRouter, status, HTTPException, Depends
 from typing import List
 
-from schemas.users import User  
+from schemas.users import User, UserCreate, UserResponse
 
 from api.depends import (
     get_get_user_by_id_use_case,
@@ -13,10 +13,10 @@ from api.depends import (
 users_router = APIRouter()
 
 
-@users_router.get("/profile/{user_id}", status_code=status.HTTP_200_OK, response_model=User)
+@users_router.get("/profile/{user_id}", status_code=status.HTTP_200_OK, response_model=UserResponse)
 async def get_user_by_id(
     user_id: int,
-    use_case = Depends(get_get_user_by_id_use_case)) -> User:
+    use_case = Depends(get_get_user_by_id_use_case)) -> UserResponse:
     try:
         user = await use_case.execute(user_id=user_id)
         return user
@@ -27,10 +27,10 @@ async def get_user_by_id(
         )
 
 
-@users_router.get("/login/{login}", status_code=status.HTTP_200_OK, response_model=User)
+@users_router.get("/login/{login}", status_code=status.HTTP_200_OK, response_model=UserResponse)
 async def get_user_by_login(
     login: str,
-    use_case = Depends(get_get_user_by_login_use_case)) -> User:
+    use_case = Depends(get_get_user_by_login_use_case)) -> UserResponse:
     try:
         user = await use_case.execute(login=login)
         return user
@@ -40,26 +40,11 @@ async def get_user_by_login(
             detail=str(e)
         )
 
-@users_router.post("/register", status_code=status.HTTP_201_CREATED, response_model=User)
+@users_router.post("/user", status_code=status.HTTP_200_OK, response_model=User)
 async def create_user(
-    login: str, email: str, password: str,
-    first_name: str | None = None,
-    last_name: str | None = None,
+    data: UserCreate,
     use_case = Depends(get_create_user_use_case)) -> User:
-    try:
-        user = await use_case.execute(
-            login=login,
-            email=email,
-            password=password,
-            first_name=first_name,
-            last_name=last_name
-        )
-        return user
-    except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+    return await use_case.execute(data)
 
 @users_router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(

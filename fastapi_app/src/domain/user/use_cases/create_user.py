@@ -1,60 +1,30 @@
 from pydantic import SecretStr
 from infrastructure.sqlite.database import database
 from infrastructure.sqlite.repositories.users import UserRepository
-from schemas.users import User as UserSchema
-
+from infrastructure.sqlite.models.users import User as UserModel
+from schemas.users import UserCreate
 
 class CreateUserUseCase:
     def __init__(self):
         self._database = database
         self._repo = UserRepository()
 
-    def validate_email(self, email: str):
-        if '@' not in email:
-            raise ValueError("Email должен содержать '@'")
-
-    def validate_password(self, password: str):
-        if len(password) < 8:
-            raise ValueError("Пароль должен содержать минимум 8 символов")
-
-    async def execute(
-        self, 
-        login: str, 
-        email: str, 
-        password: str,
-        first_name: str | None = None,
-        last_name: str | None = None) -> UserSchema:
+    async def execute(self, data: UserCreate) -> UserCreate:
         with self._database.session() as session:
-            try:
-                self.validate_email(email)
-                exist_login=self._repo.get_user_by_login(session, login)
-                if exist_login:
-                    raise ValueError("Пользователь с таким логином уже существует")
-
-                exist_email=self._repo.get_user_by_email(session, email)
-                if exist_email:
-                    raise ValueError("Пользователь с такой почтой уже существует")
-
-                user = self._repo.create(
-                    session=session,
-                    login=login,
-                    email=email,
-                    password=password,
-                    first_name=first_name,
-                    last_name=last_name
+            existing = self._repo.get_user_by_login(session, data.login)
+            if existing:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="Пользователь с таким логином уже существует"
                 )
 
-                user_data = {
-                    "id":user.id,
-                    "login":user.login,
-                    "email":user.email,
-                    "password":SecretStr(user.password),
-                    "first_name":user.first_name,
-                    "last_name":user.last_name
-                }
+            user = UserModel(
+                login=data.login,
+                email=data.email,
+                first_name=data.first_name,
+                last_name=data.last_name,
+                password=data.password
+            )
 
-                return UserSchema.model_validate(obj=user_data)
-
-            except ValueError as e:
-                session.rollback()
-                raise e
+            created = self._repo.create_user(session, user)
+            return UserCreate.model_validate(created, from_attributes=True)
