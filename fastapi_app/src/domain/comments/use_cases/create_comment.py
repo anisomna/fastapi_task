@@ -18,7 +18,7 @@ class CreateCommentUseCase:
             if not author:
                 raise ValueError("Автор не найден")
 
-            comment = self._repo.create(
+            comment = self._repo.create_comment(
                 session=session,
                 text=text,
                 post_id=post_id,

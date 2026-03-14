@@ -11,7 +11,7 @@ class GetAllCommentsUseCase:
 
     async def execute(self) -> List[CommentSchema]:
         with self._database.session() as session:
-            comments = self._repo.get_all(session)
+            comments = self._repo.get_all_comments(session)
 
             result = []
             for comment in comments:

@@ -10,7 +10,7 @@ class GetCommentByIdUseCase:
 
     async def execute(self, comment_id: int) -> CommentSchema:
         with self._database.session() as session:
-            comment = self._repo.get_by_id(session, comment_id)
+            comment = self._repo.get_comment_by_id(session, comment_id)
 
             if not comment:
                 raise ValueError("Не удалось найти комментарий")

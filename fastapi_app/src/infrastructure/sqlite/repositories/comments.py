@@ -8,6 +8,10 @@ class CommentRepository:
     def __init__(self):
         self._model: Type[Comment] = Comment
 
+    def get_all_comments(self, session: Session) -> List[Comment]:
+        query = session.query(self._model)
+        return query.all()
+
     def get_comment_by_id(self, session: Session, comment_id: int) -> Comment:
         return session.get(self._model, comment_id)
 
@@ -19,7 +23,7 @@ class CommentRepository:
         )
         return query.all()
 
-    def create(self, session: Session, text: str, author_id: int, post_id: int) -> Comment:
+    def create_comment(self, session: Session, text: str, author_id: int, post_id: int) -> Comment:
         comment = Comment(
             text=text,
             author_id=author_id,
@@ -27,11 +31,11 @@ class CommentRepository:
             created_at=datetime.now()
         )
         session.add(comment)
-        session.flush() # Получить ID без коммита
+        session.flush()
         return comment
 
-    def delete(self, session: Session, comment_id: int) -> bool:
-        comment = self.get_by_id(session, comment_id)
+    def delete_comment(self, session: Session, comment_id: int) -> bool:
+        comment = self.get_comment_by_id(session, comment_id)
         if comment:
             session.delete(comment)
             return True

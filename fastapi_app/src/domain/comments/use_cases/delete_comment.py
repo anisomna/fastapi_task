@@ -9,10 +9,10 @@ class DeleteCommentUseCase:
 
     async def execute(self, comment_id: int) -> bool:
         with self._database.session() as session:
-            comment = self._repo.get_by_id(session, comment_id)
+            comment = self._repo.get_comment_by_id(session, comment_id)
 
             if not comment:
                 raise ValueError("Не удалось найти комментарий")
 
-            result = self._repo.delete(session, comment_id)
+            result = self._repo.delete_comment(session, comment_id)
             return result
