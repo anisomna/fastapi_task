@@ -1,27 +1,28 @@
+from typing import List
 from infrastructure.sqlite.database import database
 from infrastructure.sqlite.repositories.users import UserRepository
-from schemas.users import UserResponse as UserSchema
-from fastapi import HTTPException, status
+from schemas.users import User as UserSchema
 
 
-class GetUserByIdUseCase:
+class GetAllUsersUseCase:
     def __init__(self):
         self._database = database
         self._repo = UserRepository()
 
-    async def execute(self, user_id: int) -> UserSchema:
+    async def execute(self) -> List[UserSchema]:
         with self._database.session() as session:
-            user = self._repo.get_user_by_id(session, user_id)
+            users = self._repo.get_all_users(session)
 
-            if not user:
-                raise ValueError("Пользователь не найден")
-
-            user_dict = {
+            result = []
+            for user in users:
+                user_dict = {
                 "id": user.id,
                 "login": user.login,
                 "email": user.email,
                 "first_name": user.first_name,
                 "last_name": user.last_name
-            }
+                }
 
-            return UserSchema.model_validate(obj=user_dict)
+                result.append(UserSchema.model_validate(obj=user_dict))
+
+            return result

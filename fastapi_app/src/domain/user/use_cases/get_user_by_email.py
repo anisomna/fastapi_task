@@ -19,4 +19,12 @@ class GetUserByEmailUseCase:
                     detail="Пользователь не найден"
                 )
 
-            return UserSchema.model_validate(obj=user)
+            user_dict = {
+                "id": user.id,
+                "login": user.login,
+                "email": user.email,
+                "first_name": user.first_name,
+                "last_name": user.last_name
+            }
+
+            return UserSchema.model_validate(obj=user_dict)

@@ -1,4 +1,4 @@
-from pydantic import SecretStr
+from fastapi import HTTPException, status
 from infrastructure.sqlite.database import database
 from infrastructure.sqlite.repositories.users import UserRepository
 from infrastructure.sqlite.models.users import User as UserModel

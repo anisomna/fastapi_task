@@ -1,3 +1,4 @@
+from domain.user.use_cases.get_all_users import GetAllUsersUseCase
 from domain.user.use_cases.get_user_by_id import GetUserByIdUseCase
 from domain.user.use_cases.get_user_by_login import GetUserByLoginUseCase
 from domain.user.use_cases.create_user import CreateUserUseCase
@@ -26,72 +27,75 @@ from domain.category.use_cases.create_category import CreateCategoryUseCase
 from domain.category.use_cases.delete_category import DeleteCategoryUseCase
 
 
-def get_get_user_by_id_use_case() -> GetUserByIdUseCase:
+def get_all_users_use_case() -> GetAllUsersUseCase:
+    return GetAllUsersUseCase()
+
+def get_user_by_id_use_case() -> GetUserByIdUseCase:
     return GetUserByIdUseCase()
 
-def get_get_user_by_login_use_case() -> GetUserByLoginUseCase:
+def get_user_by_login_use_case() -> GetUserByLoginUseCase:
     return GetUserByLoginUseCase()
 
-def get_create_user_use_case() -> CreateUserUseCase:
+def create_user_use_case() -> CreateUserUseCase:
     return CreateUserUseCase()
 
-def get_delete_user_use_case() -> DeleteUserUseCase:
+def delete_user_use_case() -> DeleteUserUseCase:
     return DeleteUserUseCase()
 
 
-def get_get_all_posts_use_case() -> GetAllPostsUseCase:
+def get_all_posts_use_case() -> GetAllPostsUseCase:
     return GetAllPostsUseCase()
 
-def get_get_post_by_id_use_case() -> GetPostByIdUseCase:
+def get_post_by_id_use_case() -> GetPostByIdUseCase:
     return GetPostByIdUseCase()
 
-def get_create_post_use_case() -> CreatePostUseCase:
+def create_post_use_case() -> CreatePostUseCase:
     return CreatePostUseCase()
 
-def get_delete_post_use_case() -> DeletePostUseCase:
+def delete_post_use_case() -> DeletePostUseCase:
     return DeletePostUseCase()
 
 
-def get_get_all_comments_use_case() -> GetAllCommentsUseCase:
+def get_all_comments_use_case() -> GetAllCommentsUseCase:
     return GetAllCommentsUseCase()
 
-def get_get_comment_by_id_use_case() -> GetCommentByIdUseCase:
+def get_comment_by_id_use_case() -> GetCommentByIdUseCase:
     return GetCommentByIdUseCase()
 
-def get_create_comment_use_case() -> CreateCommentUseCase:
+def create_comment_use_case() -> CreateCommentUseCase:
     return CreateCommentUseCase()
 
-def get_delete_comment_use_case() -> DeleteCommentUseCase:
+def delete_comment_use_case() -> DeleteCommentUseCase:
     return DeleteCommentUseCase()
 
 
-def get_get_all_locations_use_case() -> GetAllLocationsUseCase:
+def get_all_locations_use_case() -> GetAllLocationsUseCase:
     return GetAllLocationsUseCase()
 
-def get_get_location_by_id_use_case() -> GetLocationByIdUseCase:
+def get_location_by_id_use_case() -> GetLocationByIdUseCase:
     return GetLocationByIdUseCase()
 
-def get_get_published_locations_use_case() -> GetPublishedLocationsUseCase:
+def get_published_locations_use_case() -> GetPublishedLocationsUseCase:
     return GetPublishedLocationsUseCase()
 
-def get_create_location_use_case() -> CreateLocationUseCase:
+def create_location_use_case() -> CreateLocationUseCase:
     return CreateLocationUseCase()
 
-def get_delete_location_use_case() -> DeleteLocationUseCase:
+def delete_location_use_case() -> DeleteLocationUseCase:
     return DeleteLocationUseCase()
 
 
-def get_get_all_categories_use_case() -> GetAllCategoriesUseCase:
+def get_all_categories_use_case() -> GetAllCategoriesUseCase:
     return GetAllCategoriesUseCase()
 
-def get_get_category_by_id_use_case() -> GetCategoryByIdUseCase:
+def get_category_by_id_use_case() -> GetCategoryByIdUseCase:
     return GetCategoryByIdUseCase()
 
-def get_get_published_categories_use_case() -> GetPublishedCategoriesUseCase:
+def get_published_categories_use_case() -> GetPublishedCategoriesUseCase:
     return GetPublishedCategoriesUseCase()
 
-def get_create_category_use_case() -> CreateCategoryUseCase:
+def create_category_use_case() -> CreateCategoryUseCase:
     return CreateCategoryUseCase()
 
-def get_delete_category_use_case() -> DeleteCategoryUseCase:
+def delete_category_use_case() -> DeleteCategoryUseCase:
     return DeleteCategoryUseCase()

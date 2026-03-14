@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Type, List
 from sqlalchemy.orm import Session
 from infrastructure.sqlite.models.users import User
 
@@ -6,6 +6,10 @@ from infrastructure.sqlite.models.users import User
 class UserRepository:
     def __init__(self):
         self._model: Type[User] = User
+
+    def get_all_users(self, session: Session) -> List[User]:
+        query = session.query(self._model)
+        return query.all()
 
     def get_user_by_id(self, session: Session, user_id: int) -> User:
         query = (
