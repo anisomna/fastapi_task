@@ -1,4 +1,5 @@
 from fastapi import APIRouter, status, HTTPException, Depends
+from pydantic import EmailStr
 from typing import List
 
 from schemas.users import User, UserCreate, UserResponse
@@ -47,9 +48,17 @@ async def get_user_by_login(
 
 @users_router.post("/register", status_code=status.HTTP_200_OK, response_model=User)
 async def create_user(
-    data: UserCreate,
+    login: str, email: EmailStr, password: str, 
+    first_name: str | None = None, last_name: str | None = None,
     use_case = Depends(create_user_use_case)) -> User:
-    return await use_case.execute(data)
+    user = await use_case.execute(
+            login=login,
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            password=password
+        )
+    return user
 
 @users_router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(

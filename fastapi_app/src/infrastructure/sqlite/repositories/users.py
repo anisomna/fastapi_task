@@ -1,6 +1,7 @@
 from typing import Type, List
 from sqlalchemy.orm import Session
 from infrastructure.sqlite.models.users import User
+from pydantic import EmailStr
 
 
 class UserRepository:
@@ -32,7 +33,15 @@ class UserRepository:
         )
         return query.scalar()
 
-    def create_user(self, session: Session, user: User) -> User:
+    def create_user(self, session: Session, login: str, email: EmailStr,  password: str, 
+        first_name: str | None = None, last_name: str | None = None) -> User:
+        user = User(
+            login=login,
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            password=password
+        )
         session.add(user)
         session.flush()
         return user
