@@ -12,7 +12,7 @@ class DeleteUserUseCase:
             user = self._repo.get_user_by_id(session, user_id)
 
             if not user:
-                raise ValueError("Пользователь не найден") 
+                raise ValueError(f"Пользователь c id {user_id} не найден") 
 
             success = self._repo.delete_user(session, user_id)
             return success

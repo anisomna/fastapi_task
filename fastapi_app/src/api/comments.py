@@ -26,10 +26,10 @@ async def get_comment_by_id(
     try:
         comment = await use_case.execute(comment_id=comment_id)
         return comment
-    except ValueError as e:
+    except ValueError as error:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e)
+            detail=str(error)
         )
 
 
@@ -44,10 +44,10 @@ async def create_comment(
             author_id=author_id
         )
         return comment
-    except ValueError as e:
+    except ValueError as error:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+            detail=str(error)
         )
 
 
@@ -58,8 +58,8 @@ async def delete_comment(
     try:
         await use_case.execute(comment_id=comment_id)
         return
-    except ValueError as e:
+    except ValueError as error:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Ошибка при удалении комментария"
+            detail=str(error)
         )

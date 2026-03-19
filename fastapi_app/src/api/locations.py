@@ -26,10 +26,10 @@ async def get_location_by_id(
     try:
         location = await use_case.execute(location_id=location_id)
         return location
-    except ValueError as e:
+    except ValueError as error:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Локация не найдена"
+            detail=str(error)
         )
 
 
@@ -43,10 +43,10 @@ async def create_location(
             is_published=is_published
         )
         return location
-    except ValueError as e:
+    except ValueError as error:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+            detail=str(error)
         )
 
 
@@ -57,8 +57,8 @@ async def delete_location(
     try:
         await use_case.execute(location_id=location_id)
         return
-    except ValueError as e:
+    except ValueError as error:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e)
+            detail=str(error)
         )

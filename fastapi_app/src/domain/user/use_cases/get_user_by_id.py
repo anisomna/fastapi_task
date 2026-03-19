@@ -14,7 +14,7 @@ class GetUserByIdUseCase:
             user = self._repo.get_user_by_id(session, user_id)
 
             if not user:
-                raise ValueError("Пользователь не найден")
+                raise ValueError(f"Пользователь c id {user_id} не найден") 
 
             user_dict = {
                 "id": user.id,

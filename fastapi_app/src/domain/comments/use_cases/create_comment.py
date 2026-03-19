@@ -1,7 +1,9 @@
 from datetime import datetime
+from fastapi import HTTPException
 from infrastructure.sqlite.database import database
 from infrastructure.sqlite.repositories.comments import CommentRepository
 from infrastructure.sqlite.repositories.users import UserRepository
+from infrastructure.sqlite.repositories.posts import PostRepository
 from schemas.comments import Comment as CommentSchema
 
 
@@ -10,13 +12,18 @@ class CreateCommentUseCase:
         self._database = database
         self._repo = CommentRepository()
         self._user_repo = UserRepository()
+        self._post_repo = PostRepository()
 
     async def execute(self, text: str, post_id: int, author_id: int) -> CommentSchema:
         with self._database.session() as session:
             author = self._user_repo.get_user_by_id(session, author_id)
+            post = self._post_repo.get_post_by_id(session, post_id)
 
             if not author:
-                raise ValueError("Автор не найден")
+                raise ValueError(f"Автор с id {author_id} не найден")
+
+            if not post:
+                raise ValueError(f"Публикация с id {post_id} не найдена")
 
             comment = self._repo.create_comment(
                 session=session,

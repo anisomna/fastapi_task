@@ -18,6 +18,13 @@ class CategoryRepository:
         )
         return query.scalar()
 
+    def get_category_by_slug(self, session: Session, slug: str) -> Category:
+        query = (
+            session.query(self._model)
+            .where(self._model.slug == slug)
+        )
+        return query.scalar()
+
     def get_published_categories(self, session: Session) -> List[Category]:
         query = (
             session.query(self._model)

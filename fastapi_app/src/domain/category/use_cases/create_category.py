@@ -11,6 +11,13 @@ class CreateCategoryUseCase:
     async def execute(self, title: str, description: str,
                     slug: str, is_published: bool = True) -> CategorySchema:
         with self._database.session() as session:
+            existing_slug = self._repo.get_category_by_slug(session, slug)
+            if existing_slug:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail=f"Категория со slug {slug} уже существует"
+                )
+        
             category = self._repo.create_category(
                 session=session,
                 title=title,

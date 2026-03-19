@@ -26,10 +26,10 @@ async def get_post_by_id(
     try:
         post = await use_case.execute(post_id=post_id)
         return post
-    except ValueError as e:
+    except ValueError as error:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e)
+            detail=str(error)
         )
 
 
@@ -54,10 +54,10 @@ async def create_post(
             image=image
         )
         return post
-    except ValueError as e:
+    except ValueError as error:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+            detail=str(error)
         )
 
 
@@ -68,8 +68,8 @@ async def delete_post(
     try:
         await use_case.execute(post_id=post_id)
         return
-    except ValueError as e:
+    except ValueError as error:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Ошибка при удалении публикации"
+            detail=str(error)
         )

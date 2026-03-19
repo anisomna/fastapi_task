@@ -13,7 +13,7 @@ class GetPostByIdUseCase:
             post = self._repo.get_post_by_id(session, post_id)
 
             if not post:
-                raise ValueError("Не удалось найти пост")
+                raise ValueError(f"Публикация с id {post_id} не найдена")
 
             post_dict = {
                 "id": post.id,

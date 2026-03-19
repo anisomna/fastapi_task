@@ -13,11 +13,8 @@ class GetUserByEmailUseCase:
         with self._database.session() as session:
             user = self._repo.get_user_by_email(session, email)
 
-            if user is None:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Пользователь не найден"
-                )
+            if not user:
+                raise ValueError(f"Пользователь c почтой {email} не найден") 
 
             user_dict = {
                 "id": user.id,

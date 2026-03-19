@@ -12,7 +12,7 @@ class DeleteCategoryUseCase:
             category = self._repo.get_category_by_id(session, category_id)
 
             if not category:
-                raise ValueError("Категория не найдена")
+                raise ValueError(f"Категория с id {category_id} не найдена")
 
             result = self._repo.delete_category(session, category_id)
             return result

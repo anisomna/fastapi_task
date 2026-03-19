@@ -26,10 +26,10 @@ async def get_user_by_id(
     try:
         user = await use_case.execute(user_id=user_id)
         return user
-    except ValueError as e:
+    except ValueError as error:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e)
+            detail=str(error)
         )
 
 
@@ -40,10 +40,10 @@ async def get_user_by_login(
     try:
         user = await use_case.execute(login=login)
         return user
-    except ValueError as e:
+    except ValueError as error:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e)
+            detail=str(error)
         )
 
 @users_router.post("/register", status_code=status.HTTP_200_OK, response_model=User)
@@ -68,8 +68,8 @@ async def delete_user(
         result = await use_case.execute(user_id=user_id)
         if result:
             return {"message": "Пользователь успешно удален"}
-    except ValueError as e:
+    except ValueError as error:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Пользователь не найден"
+            detail=str(error)
         )

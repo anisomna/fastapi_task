@@ -12,7 +12,7 @@ class DeleteCommentUseCase:
             comment = self._repo.get_comment_by_id(session, comment_id)
 
             if not comment:
-                raise ValueError("Не удалось найти комментарий")
+                raise ValueError(f"Комментарий с id {comment_id} не найден")
 
             result = self._repo.delete_comment(session, comment_id)
             return result

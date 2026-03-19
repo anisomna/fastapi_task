@@ -12,7 +12,7 @@ class DeleteLocationUseCase:
             location = self._repo.get_location_by_id(session, location_id)
 
             if not location:
-                raise ValueError("Место не найдено")
+                raise ValueError(f"Локация с id {location_id} не найдена")
 
             result = self._repo.delete_location(session, location_id)
             return result

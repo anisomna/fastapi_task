@@ -20,12 +20,18 @@ class CreateUserUseCase:
             if existing_login:
                 raise HTTPException(
                     status_code=status.HTTP_409_CONFLICT,
-                    detail="Пользователь с таким логином уже существует"
+                    detail=f"Пользователь с логином {login} уже существует"
                 )
             if existing_email:
                 raise HTTPException(
                     status_code=status.HTTP_409_CONFLICT,
-                    detail="Пользователь с такой почтой уже существует"
+                    detail=f"Пользователь с почтой {email} уже существует"
+                )
+            
+            if len(password) < 8:
+                raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                    detail=f"Пароль должен быть не менее 8 символов"
                 )
 
             user = self._repo.create_user(

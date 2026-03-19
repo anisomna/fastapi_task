@@ -13,7 +13,7 @@ class GetCommentByIdUseCase:
             comment = self._repo.get_comment_by_id(session, comment_id)
 
             if not comment:
-                raise ValueError("Не удалось найти комментарий")
+                raise ValueError(f"Комментарий с id {comment_id} не найден")
 
             comment_dict = {
                 "id": comment.id,

@@ -13,7 +13,7 @@ class GetLocationByIdUseCase:
             location = self._repo.get_location_by_id(session, location_id)
 
             if not location:
-                raise ValueError("Место не найдено")
+                raise ValueError(f"Локация с id {location_id} не найдена")
 
             location_dict = {
                 "id": location.id,
