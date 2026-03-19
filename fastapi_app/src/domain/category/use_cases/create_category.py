@@ -1,6 +1,7 @@
 from infrastructure.sqlite.database import database
 from infrastructure.sqlite.repositories.categories import CategoryRepository
 from schemas.categories import Category as CategorySchema
+from fastapi import HTTPException, status
 
 
 class CreateCategoryUseCase:
