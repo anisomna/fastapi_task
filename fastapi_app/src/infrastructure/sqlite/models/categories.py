@@ -1,4 +1,4 @@
-from infrastructure.sqlite.database import Base
+from ..database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, Text, Boolean, DateTime
 from datetime import datetime

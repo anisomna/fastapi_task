@@ -8,6 +8,7 @@
    - pip install "fastapi[standard]"
    - pip install uvicorn
    - pip install sqlalchemy
+   - pip install alembic
  - нажать правой кнопкой на папку `src`
    - выбрать `Mark Directory as` -> `Source Root`
  - запустить файл main.py (fastapi dev main.py)
