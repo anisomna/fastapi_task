@@ -31,10 +31,10 @@ class CreatePostUseCase:
             if not author:
                 raise ValueError(f"Автор с id {author_id} не найден")
 
-            if not location:
+            if location_id is not None and location is None:
                 raise ValueError(f"Локация с id {location_id} не найдена")
             
-            if not category:
+            if category_id is not None and category is None:
                 raise ValueError(f"Категория с id {category_id} не найдена")
 
             post = self._repo.create_post(
