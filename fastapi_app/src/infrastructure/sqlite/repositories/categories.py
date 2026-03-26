@@ -2,6 +2,9 @@ from typing import Type, List
 from sqlalchemy.orm import Session
 from infrastructure.sqlite.models.categories import Category
 from datetime import datetime
+from schemas.category import Category as CategorySchema
+from core.exceptions.database_exceptions import CategoryNotFoundException
+
 
 class CategoryRepository:
     def __init__(self):
@@ -9,53 +12,63 @@ class CategoryRepository:
 
     def get_all_categories(self, session: Session) -> List[Category]:
         query = session.query(self._model).order_by(self._model.title)
-        return query.all()
+        categories = query.all()
+
+        if not categories:
+            raise CategoryNotFoundException()
+
+        return categories
 
     def get_category_by_id(self, session: Session, category_id: int) -> Category:
         query = (
             session.query(self._model)
             .where(self._model.id == category_id)
         )
-        return query.scalar()
+        category = query.scalar()
+
+        if not category:
+            raise CategoryNotFoundException()
+
+        return category
 
     def get_category_by_slug(self, session: Session, slug: str) -> Category:
         query = (
             session.query(self._model)
             .where(self._model.slug == slug)
         )
-        return query.scalar()
+        category = query.scalar()
+
+        if not category:
+            raise CategoryNotFoundException()
+
+        return category
 
     def get_published_categories(self, session: Session) -> List[Category]:
         query = (
             session.query(self._model)
             .where(self._model.is_published == True)
         )
-        return query.all()
+        categories = query.all()
 
-    def get_category_by_slug(self, session: Session, slug: str) -> Category:
+        if not categories:
+            raise CategoryNotFoundException()
+
+        return categories
+
+    def create_category(self, session: Session, data: CategorySchema) -> Category:
         query = (
-            session.query(self._model)
-            .where(self._model.slug == slug)
+            insert(self._model)
+            .values(data.model_dump(exclude_none=True))
+            .returning(self._model)
         )
-        return query.scalar()
+        category = session.scalar(query)
 
-    def create_category(self, session: Session, title: str, description: str,
-        slug: str, is_published: bool = True) -> Category:
-        category = self._model(
-            title=title,
-            description=description,
-            slug=slug,
-            is_published=is_published,
-            created_at=datetime.now()
-        )
-        session.add(category)
-        session.flush()
         return category
 
-    def delete_category(self, session: Session, category_id: int) -> bool:
+    def delete_category(self, session: Session, category_id: int) -> None:
         category = self.get_category_by_id(session, category_id)
 
         if category:
             session.delete(category)
-            return True
-        return False
+        else:
+            raise CategoryNotFoundException()

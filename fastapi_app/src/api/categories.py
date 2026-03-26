@@ -1,7 +1,7 @@
 from fastapi import APIRouter, status, HTTPException, Depends
 from typing import List
 from datetime import datetime
-from src.core.exceptions.domain_exceptions import (
+from core.exceptions.domain_exceptions import (
     CategoryNotFoundByIdException,
     CategorySlugIsNotUniqueException
 )

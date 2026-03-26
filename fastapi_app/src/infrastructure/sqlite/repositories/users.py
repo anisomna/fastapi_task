@@ -1,7 +1,15 @@
 from typing import Type, List
+from sqlalchemy import insert, select
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from infrastructure.sqlite.models.users import User
+from schemas.users import UserCreate as UserSchema
 from pydantic import EmailStr
+from core.exceptions.database_exceptions import (
+    UserNotFoundException,
+    UserEmailAlreadyExistsException,
+    UserLoginAlreadyExistsException
+)
 
 
 class UserRepository:
@@ -10,45 +18,76 @@ class UserRepository:
 
     def get_all_users(self, session: Session) -> List[User]:
         query = session.query(self._model)
-        return query.all()
+        users = query.all()
+
+        if not users:
+            raise UserNotFoundException()
+
+        return users
 
     def get_user_by_id(self, session: Session, user_id: int) -> User:
         query = (
-            session.query(self._model)
+            select(self._model)
             .where(self._model.id == user_id)
         )
-        return query.scalar()
+        user = session.scalar(query)
+
+        if not user:
+            raise UserNotFoundException()
+
+        return user
 
     def get_user_by_login(self, session: Session, login: str) -> User:
         query = (
-            session.query(self._model)
+            select(self._model)
             .where(self._model.login == login)
         )
-        return query.scalar()
+        user = session.scalar(query)
+
+        if not user:
+            raise UserNotFoundException()
+
+        return user
     
     def get_user_by_email(self, session: Session, email: str) -> User:
         query = (
-            session.query(self._model)
+            select(self._model)
             .where(self._model.email == email)
         )
-        return query.scalar()
+        user = session.scalar(query)
 
-    def create_user(self, session: Session, login: str, email: EmailStr,  password: str, 
-        first_name: str | None = None, last_name: str | None = None) -> User:
-        user = User(
-            login=login,
-            email=email,
-            first_name=first_name,
-            last_name=last_name,
-            password=password
-        )
-        session.add(user)
-        session.flush()
+        if not user:
+            raise UserNotFoundException()
+
         return user
 
-    def delete_user(self, session: Session, user_id: int) -> bool:
+    def create_user(self, session: Session, UserSchema) -> User:
+        existing_user = session.scalar(
+            select(self._model).where(
+                or_(self._model.login == data.login,
+                    self._model.email == data.email,
+                )
+            )
+        )
+
+        if existing_user is not None:
+            if existing_user.login == data.login:
+                raise UserLoginAlreadyExistsException()
+            elif existing_user.email == data.email:
+                raise UserEmailAlreadyExistsException()
+
+        query = (
+            insert(self._model)
+            .values(data.model_dump())
+            .returning(self._model)
+        )
+        user = session.scalar(query)
+
+        return user
+
+    def delete_user(self, session: Session, user_id: int) -> None:
         user = self.get_user_by_id(session, user_id)
         if user:
             session.delete(user)
-            return True
-        return False
+        else:
+            raise UserNotFoundException()
