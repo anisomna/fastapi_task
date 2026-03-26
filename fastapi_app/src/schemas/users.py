@@ -1,4 +1,5 @@
-from pydantic import BaseModel, SecretStr, Field, EmailStr
+from pydantic import BaseModel, SecretStr, Field, EmailStr, ConfigDict, field_validator
+from fastapi import HTTPException, status
 
 
 class User(BaseModel):
@@ -9,12 +10,22 @@ class User(BaseModel):
 
 
 class UserCreate(User):
-    password: str = Field(min_length=8)
+    password: str
+
+    @field_validator("password", mode="after")
+    @staticmethod
+    def check_password(password: str) -> str:
+        if len(password) < 8:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail="Пароль должен быть не менее 8 символов"
+            )
+
+        return password
 
 
 class UserResponse(User):
     id: int
-    login: str
-    email: EmailStr
-    first_name: str | None = Field(default=None, max_length=30)
-    last_name: str | None = Field(default=None, max_length=30)
+    password: SecretStr
+
+    model_config = ConfigDict(from_attributes=True)
