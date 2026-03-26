@@ -19,7 +19,15 @@ class CategoryNotFoundException(BaseDatabaseException):
     pass
 
 
+class CategorySlugAlreadyExistsException(BaseDatabaseException):
+    pass
+
+
 class LocationNotFoundException(BaseDatabaseException):
+    pass
+
+
+class LocationNameAlreadyExistsException(BaseDatabaseException):
     pass
 
 

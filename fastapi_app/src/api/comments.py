@@ -1,8 +1,12 @@
 from fastapi import APIRouter, status, HTTPException, Depends
 from typing import List
 from datetime import datetime
-
-from schemas.comments import Comment
+from src.core.exceptions.domain_exceptions import (
+    CommentNotFoundByIdException,
+    PostNotFoundByIdException,
+    UserNotFoundByIdException,
+)
+from schemas.comments import CommentResponse, Comment
 
 from api.depends import (
     get_all_comments_use_case,
@@ -13,41 +17,35 @@ from api.depends import (
 
 comments_router = APIRouter()
 
-@comments_router.get("/", status_code=status.HTTP_200_OK, response_model=List[Comment])
-async def get_all_comments(use_case = Depends(get_all_comments_use_case)) -> List[Comment]:
+@comments_router.get("/", status_code=status.HTTP_200_OK, response_model=List[CommentResponse])
+async def get_all_comments(use_case = Depends(get_all_comments_use_case)) -> List[CommentResponse]:
     comments = await use_case.execute()
     return comments
 
 
-@comments_router.get("/{comment_id}", status_code=status.HTTP_200_OK, response_model=Comment)
+@comments_router.get("/{comment_id}", status_code=status.HTTP_200_OK, response_model=CommentResponse)
 async def get_comment_by_id(
     comment_id: int,
-    use_case = Depends(get_comment_by_id_use_case)) -> Comment:
+    use_case = Depends(get_comment_by_id_use_case)) -> CommentResponse:
     try:
         comment = await use_case.execute(comment_id=comment_id)
         return comment
-    except ValueError as error:
+    except CommentNotFoundByIdException as exc:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(error)
+            status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail()
         )
 
 
-@comments_router.post("/create_comment", status_code=status.HTTP_201_CREATED, response_model=Comment)
+@comments_router.post("/create_comment", status_code=status.HTTP_201_CREATED, response_model=CommentResponse)
 async def create_comment(
-    text: str, post_id: int, author_id: int,
-    use_case = Depends(create_comment_use_case)) -> Comment:
+    data: Comment,
+    use_case = Depends(create_comment_use_case)) -> CommentResponse:
     try:
-        comment = await use_case.execute(
-            text=text,
-            post_id=post_id,
-            author_id=author_id
-        )
+        comment = await use_case.execute(data=data)
         return comment
-    except ValueError as error:
+    except (UserNotFoundByIdException, PostNotFoundByIdException) as exc:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(error)
+            status_code=status.HTTP_400_BAD_REQUEST, detail=exc.get_detail()
         )
 
 
@@ -56,10 +54,9 @@ async def delete_comment(
     comment_id: int,
     use_case = Depends(delete_comment_use_case)):
     try:
-        await use_case.execute(comment_id=comment_id)
-        return
-    except ValueError as error:
+        comment = await use_case.execute(comment_id=comment_id)
+        return comment
+    except CommentNotFoundByIdException as exc:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(error)
+            status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail()
         )

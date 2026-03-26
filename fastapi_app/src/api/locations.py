@@ -1,8 +1,11 @@
 from fastapi import APIRouter, status, HTTPException, Depends
 from typing import List
 from datetime import datetime
-
-from schemas.locations import Location
+from src.core.exceptions.domain_exceptions import (
+    LocationNotFoundByIdException,
+    LocationNameIsNotUniqueException
+)
+from schemas.locations import LocationResponse, Location
 
 from api.depends import (
     get_all_locations_use_case,
@@ -13,41 +16,34 @@ from api.depends import (
 
 locations_router = APIRouter()
 
-@locations_router.get("/", status_code=status.HTTP_200_OK, response_model=List[Location])
-async def get_all_locations(use_case = Depends(get_all_locations_use_case)) -> List[Location]:
+@locations_router.get("/", status_code=status.HTTP_200_OK, response_model=List[LocationResponse])
+async def get_all_locations(use_case = Depends(get_all_locations_use_case)) -> List[LocationResponse]:
     locations = await use_case.execute()
     return locations
 
 
-@locations_router.get("/{location_id}", status_code=status.HTTP_200_OK, response_model=Location)
+@locations_router.get("/{location_id}", status_code=status.HTTP_200_OK, response_model=LocationResponse)
 async def get_location_by_id(
     location_id: int,
-    use_case = Depends(get_location_by_id_use_case)) -> Location:
+    use_case = Depends(get_location_by_id_use_case)) -> LocationResponse:
     try:
         location = await use_case.execute(location_id=location_id)
         return location
-    except ValueError as error:
+    except LocationNotFoundByIdException as exc:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(error)
+            status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail()
         )
 
 
-@locations_router.post("/add_location", status_code=status.HTTP_201_CREATED, response_model=Location)
+@locations_router.post("/add_location", status_code=status.HTTP_201_CREATED, response_model=LocationResponse)
 async def create_location(
-    name: str, is_published: bool,
-    use_case = Depends(create_location_use_case)) -> Location:
+    data: Location,
+    use_case = Depends(create_location_use_case)) -> LocationResponse:
     try:
-        location = await use_case.execute(
-            name=name,
-            is_published=is_published
-        )
+        location = await use_case.execute(data=data)
         return location
-    except ValueError as error:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(error)
-        )
+    except LocationNameIsNotUniqueException as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=exc.get_detail())
 
 
 @locations_router.delete("/delete/{location_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -55,10 +51,9 @@ async def delete_location(
     location_id: int,
     use_case = Depends(delete_location_use_case)):
     try:
-        await use_case.execute(location_id=location_id)
-        return
-    except ValueError as error:
+        location = await use_case.execute(location_id=location_id)
+        return location
+    except LocationNotFoundByIdException as exc:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(error)
+            status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail()
         )
