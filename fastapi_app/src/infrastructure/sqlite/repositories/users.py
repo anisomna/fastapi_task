@@ -1,5 +1,5 @@
 from typing import Type, List
-from sqlalchemy import insert, select
+from sqlalchemy import insert, select, or_
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from infrastructure.sqlite.models.users import User
@@ -61,7 +61,7 @@ class UserRepository:
 
         return user
 
-    def create_user(self, session: Session, UserSchema) -> User:
+    def create_user(self, session: Session, data: UserSchema) -> User:
         existing_user = session.scalar(
             select(self._model).where(
                 or_(self._model.login == data.login,

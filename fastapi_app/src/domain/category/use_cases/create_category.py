@@ -1,7 +1,12 @@
 from infrastructure.sqlite.database import database
 from infrastructure.sqlite.repositories.categories import CategoryRepository
-from schemas.categories import Category as CategorySchema
+from schemas.categories import CategoryResponse as CategorySchema, Category
 from fastapi import HTTPException, status
+from core.exceptions.database_exceptions import CategorySlugAlreadyExistsException
+from core.exceptions.domain_exceptions import CategorySlugIsNotUniqueException
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class CreateCategoryUseCase:
@@ -9,31 +14,19 @@ class CreateCategoryUseCase:
         self._database = database
         self._repo = CategoryRepository()
 
-    async def execute(self, title: str, description: str,
-                    slug: str, is_published: bool = True) -> CategorySchema:
+    async def execute(self, data: Category) -> CategorySchema:
         with self._database.session() as session:
-            existing_slug = self._repo.get_category_by_slug(session, slug)
-            if existing_slug:
-                raise HTTPException(
-                    status_code=status.HTTP_409_CONFLICT,
-                    detail=f"Категория со slug {slug} уже существует"
-                )
-        
-            category = self._repo.create_category(
-                session=session,
-                title=title,
-                description=description,
-                slug=slug,
-                is_published=is_published
-            )
+            try:
+                existing_category = self._repo.get_category_by_slug(session, data.slug)
+                if existing_category:
+                    error = CategorySlugIsNotUniqueException(slug=data.slug)
+                    logger.error(error.get_detail())
+                    raise error
 
-            category_data = {
-                "id":category.id,
-                "title":category.title,
-                "description":category.description,
-                "slug":category.slug,
-                "is_published":category.is_published,
-                "created_at":category.created_at
-            }
+                category = self._repo.create_category(session=session, data=data)
+            except CategorySlugAlreadyExistsException:
+                error = CategorySlugIsNotUniqueException(slug=data.slug)
+                logger.error(error.get_detail())
+                raise error
 
-            return CategorySchema.model_validate(obj=category_data)
+            return CategorySchema.model_validate(obj=category)

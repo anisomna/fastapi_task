@@ -1,7 +1,7 @@
 from typing import List
 from infrastructure.sqlite.database import database
 from infrastructure.sqlite.repositories.locations import LocationRepository
-from schemas.locations import Location as LocationSchema
+from schemas.locations import LocationResponse as LocationSchema
 
 
 class GetPublishedLocationsUseCase:
@@ -15,12 +15,6 @@ class GetPublishedLocationsUseCase:
 
             result = []
             for location in locations:
-                location_dict = {
-                    "id": location.id,
-                    "name": location.name,
-                    "is_published": location.is_published,
-                    "created_at": location.created_at
-                }
-                result.append(LocationSchema.model_validate(obj=location_dict))
+                result.append(LocationSchema.model_validate(obj=location))
 
             return result

@@ -51,8 +51,7 @@ async def delete_location(
     location_id: int,
     use_case = Depends(delete_location_use_case)):
     try:
-        location = await use_case.execute(location_id=location_id)
-        return location
+        await use_case.execute(location_id=location_id)
     except LocationNotFoundByIdException as exc:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail()

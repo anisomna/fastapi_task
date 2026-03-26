@@ -1,7 +1,7 @@
 from typing import List
 from infrastructure.sqlite.database import database
 from infrastructure.sqlite.repositories.comments import CommentRepository
-from schemas.comments import Comment as CommentSchema
+from schemas.comments import CommentResponse as CommentSchema
 
 
 class GetAllCommentsUseCase:
@@ -15,14 +15,6 @@ class GetAllCommentsUseCase:
 
             result = []
             for comment in comments:
-                comment_dict = {
-                    "id": comment.id,
-                    "text": comment.text,
-                    "created_at": comment.created_at,
-                    "post_id": comment.post_id,
-                    "author_id": comment.author_id
-                }
-
-                result.append(CommentSchema.model_validate(obj=comment_dict))
+                result.append(CommentSchema.model_validate(obj=comment))
 
             return result

@@ -44,12 +44,12 @@ class UserLoginOrEmailIsNotUniqueException(BaseDomainException):
 
     @classmethod
     def from_login(cls, login: str) -> 'UserloginOrEmailIsNotUniqueException':
-        detail = "Пользователь с логином '{login}' уже существует"
+        detail = f"Пользователь с логином '{login}' уже существует"
         return cls(detail=detail)
 
     @classmethod
     def from_email(cls, email: EmailStr) -> 'UserloginOrEmailIsNotUniqueException':
-        detail = "Пользователь с почтой '{email}' уже существует"
+        detail = f"Пользователь с почтой '{email}' уже существует"
         return cls(detail=detail)
 
 
@@ -58,6 +58,15 @@ class CategoryNotFoundByIdException(BaseDomainException):
 
     def __init__(self, id: int) -> None:
         self._exception_text_template = self._exception_text_template.format(id=id)
+
+        super().__init__(detail=self._exception_text_template)
+
+
+class CategoryNotFoundBySlugException(BaseDomainException):
+    _exception_text_template = "Категория со slug '{slug}' не найдена"
+
+    def __init__(self, slug: int) -> None:
+        self._exception_text_template = self._exception_text_template.format(slug=slug)
 
         super().__init__(detail=self._exception_text_template)
 

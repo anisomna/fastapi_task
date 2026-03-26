@@ -1,7 +1,7 @@
 from typing import List
 from infrastructure.sqlite.database import database
 from infrastructure.sqlite.repositories.users import UserRepository
-from schemas.users import User as UserSchema
+from schemas.users import UserResponse as UserSchema
 
 
 class GetAllUsersUseCase:
@@ -15,14 +15,6 @@ class GetAllUsersUseCase:
 
             result = []
             for user in users:
-                user_dict = {
-                "id": user.id,
-                "login": user.login,
-                "email": user.email,
-                "first_name": user.first_name,
-                "last_name": user.last_name
-                }
-
-                result.append(UserSchema.model_validate(obj=user_dict))
+                result.append(UserSchema.model_validate(obj=user))
 
             return result

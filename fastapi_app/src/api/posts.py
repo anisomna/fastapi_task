@@ -59,8 +59,7 @@ async def delete_post(
     post_id: int,
     use_case = Depends(delete_post_use_case)):
     try:
-        post = await use_case.execute(post_id=post_id)
-        return post
+        await use_case.execute(post_id=post_id)
     except PostNotFoundByIdException as exc:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail()

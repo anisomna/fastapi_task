@@ -5,7 +5,7 @@ from core.exceptions.domain_exceptions import (
     CategoryNotFoundByIdException,
     CategorySlugIsNotUniqueException
 )
-from schemas.categories import CategoryRespons, Category
+from schemas.categories import CategoryResponse, Category
 
 from api.depends import (
     get_all_categories_use_case,
@@ -50,8 +50,7 @@ async def delete_category(
     category_id: int,
     use_case = Depends(delete_category_use_case)):
     try:
-        category = await use_case.execute(category_id=category_id)
-        return category
+        await use_case.execute(category_id=category_id)
     except CategoryNotFoundByIdException as exc:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail()

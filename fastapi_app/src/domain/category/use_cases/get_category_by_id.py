@@ -1,6 +1,11 @@
 from infrastructure.sqlite.database import database
 from infrastructure.sqlite.repositories.categories import CategoryRepository
-from schemas.categories import Category as CategorySchema
+from schemas.categories import CategoryResponse as CategorySchema
+from core.exceptions.database_exceptions import CategoryNotFoundException
+from core.exceptions.domain_exceptions import CategoryNotFoundByIdException
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class GetCategoryByIdUseCase:
@@ -10,18 +15,11 @@ class GetCategoryByIdUseCase:
 
     async def execute(self, category_id: int) -> CategorySchema:
         with self._database.session() as session:
-            category = self._repo.get_category_by_id(session, category_id)
+            try:
+                category = self._repo.get_category_by_id(session, category_id)
+            except CategoryNotFoundException:
+                error = CategoryNotFoundByIdException(id=category_id)
+                logger.error(error.get_detail())
+                raise error
 
-            if not category:
-                raise ValueError(f"Категория с id {category_id} не найдена")
-
-            category_dict = {
-                "id": category.id,
-                "title": category.title,
-                "description": category.description,
-                "slug": category.slug,
-                "is_published": category.is_published,
-                "created_at": category.created_at
-            }
-
-            return CategorySchema.model_validate(obj=category_dict)
+            return CategorySchema.model_validate(obj=category)

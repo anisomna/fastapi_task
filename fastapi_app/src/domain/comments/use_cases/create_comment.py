@@ -2,42 +2,37 @@ from datetime import datetime
 from fastapi import HTTPException
 from infrastructure.sqlite.database import database
 from infrastructure.sqlite.repositories.comments import CommentRepository
-from infrastructure.sqlite.repositories.users import UserRepository
-from infrastructure.sqlite.repositories.posts import PostRepository
-from schemas.comments import Comment as CommentSchema
+from schemas.comments import CommentResponse as CommentSchema, Comment
+from core.exceptions.database_exceptions import (
+    PostNotFoundException,
+    UserNotFoundException
+)
+from core.exceptions.domain_exceptions import (
+    PostNotFoundByIdException,
+    UserNotFoundByIdException
+)
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class CreateCommentUseCase:
     def __init__(self):
         self._database = database
         self._repo = CommentRepository()
-        self._user_repo = UserRepository()
-        self._post_repo = PostRepository()
 
-    async def execute(self, text: str, post_id: int, author_id: int) -> CommentSchema:
+    async def execute(
+        self, data: Comment) -> CommentSchema:
         with self._database.session() as session:
-            author = self._user_repo.get_user_by_id(session, author_id)
-            post = self._post_repo.get_post_by_id(session, post_id)
+            try:
+                comment = self._repo.create_comment(session=session, data=data)
+            except PostNotFoundException:
+                error = PostNotFoundByIdException(id=data.post_id)
+                logger.error(error.get_detail())
+                raise error
+            except UserNotFoundException:
+                error = UserNotFoundByIdException(id=data.author_id)
+                logger.error(error.get_detail())
+                raise error
 
-            if not author:
-                raise ValueError(f"Автор с id {author_id} не найден")
-
-            if not post:
-                raise ValueError(f"Публикация с id {post_id} не найдена")
-
-            comment = self._repo.create_comment(
-                session=session,
-                text=text,
-                post_id=post_id,
-                author_id=author_id
-            )
-
-            comment_dict = {
-                "id": comment.id,
-                "text": comment.text,
-                "created_at": comment.created_at,
-                "post_id": comment.post_id,
-                "author_id": comment.author_id
-            }
-
-            return CommentSchema.model_validate(obj=comment_dict)
+            return CommentSchema.model_validate(obj=comment)

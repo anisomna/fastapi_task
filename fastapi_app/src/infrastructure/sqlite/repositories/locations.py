@@ -1,8 +1,9 @@
 from datetime import datetime
 from typing import Type, List
+from sqlalchemy import insert, select
 from sqlalchemy.orm import Session
 from infrastructure.sqlite.models.locations import Location
-from schemas.location import Location as LocationSchema
+from schemas.locations import Location as LocationSchema
 from core.exceptions.database_exceptions import (
     LocationNotFoundException,
     LocationNameAlreadyExistsException

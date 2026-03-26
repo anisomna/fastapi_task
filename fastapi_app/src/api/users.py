@@ -48,7 +48,7 @@ async def create_user(
     data: UserCreate,
     use_case = Depends(create_user_use_case)) -> UserResponse:
     try:
-        user = await use_case.execute(user=user)
+        user = await use_case.execute(data=data)
         return user
     except UserLoginOrEmailIsNotUniqueException as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=exc.get_detail())
@@ -58,8 +58,6 @@ async def delete_user(
     user_id: int,
     use_case = Depends(delete_user_use_case)):
     try:
-        result = await use_case.execute(user_id=user_id)
-        if result:
-            return {"message": f"Пользователь с id = {user_id} успешно удален"}
+        await use_case.execute(user_id=user_id)
     except UserNotFoundByIdException as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail())

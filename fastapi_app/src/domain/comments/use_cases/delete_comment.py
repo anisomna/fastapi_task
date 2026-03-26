@@ -1,5 +1,10 @@
 from infrastructure.sqlite.database import database
 from infrastructure.sqlite.repositories.comments import CommentRepository
+from core.exceptions.database_exceptions import CommentNotFoundException
+from core.exceptions.domain_exceptions import CommentNotFoundByIdException
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class DeleteCommentUseCase:
@@ -7,12 +12,11 @@ class DeleteCommentUseCase:
         self._database = database
         self._repo = CommentRepository()
 
-    async def execute(self, comment_id: int) -> bool:
+    async def execute(self, comment_id: int) -> None:
         with self._database.session() as session:
-            comment = self._repo.get_comment_by_id(session, comment_id)
-
-            if not comment:
-                raise ValueError(f"Комментарий с id {comment_id} не найден")
-
-            result = self._repo.delete_comment(session, comment_id)
-            return result
+            try:
+                self._repo.delete_comment(session=session, comment_id=comment_id)
+            except CommentNotFoundException:
+                error = CommentNotFoundByIdException(id=comment_id)
+                logger.error(error.get_detail())
+                raise error

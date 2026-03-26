@@ -1,10 +1,11 @@
 from typing import Type, List
 from datetime import datetime
+from sqlalchemy import insert, select
 from sqlalchemy.orm import Session
 from infrastructure.sqlite.models.comments import Comment
-from infrastructure.sqlite.models.user import User
-from infrastructure.sqlite.models.post import Post
-from schemas.comment import Comment as CommentSchema
+from infrastructure.sqlite.models.users import User
+from infrastructure.sqlite.models.posts import Post
+from schemas.comments import Comment as CommentSchema
 from core.exceptions.database_exceptions import (
     CommentNotFoundException,
     PostNotFoundException,
@@ -52,7 +53,7 @@ class CommentRepository:
 
         return comments
 
-    def create_comment(self, session: Session, data: CommenttSchema) -> Comment:
+    def create_comment(self, session: Session, data: CommentSchema) -> Comment:
         author = session.get(self._author_model, data.author_id)
         if not author:
             raise UserNotFoundException()

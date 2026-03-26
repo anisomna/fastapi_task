@@ -54,8 +54,7 @@ async def delete_comment(
     comment_id: int,
     use_case = Depends(delete_comment_use_case)):
     try:
-        comment = await use_case.execute(comment_id=comment_id)
-        return comment
+        await use_case.execute(comment_id=comment_id)
     except CommentNotFoundByIdException as exc:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail()

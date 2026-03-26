@@ -1,8 +1,9 @@
 from typing import Type, List
+from sqlalchemy import insert, select
 from sqlalchemy.orm import Session
 from infrastructure.sqlite.models.categories import Category
 from datetime import datetime
-from schemas.category import Category as CategorySchema
+from schemas.categories import Category as CategorySchema
 from core.exceptions.database_exceptions import CategoryNotFoundException
 
 

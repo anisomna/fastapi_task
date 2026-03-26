@@ -1,6 +1,11 @@
 from infrastructure.sqlite.database import database
 from infrastructure.sqlite.repositories.locations import LocationRepository
-from schemas.locations import Location as LocationSchema
+from schemas.locations import LocationResponse as LocationSchema, Location
+from core.exceptions.database_exceptions import LocationNameAlreadyExistsException
+from core.exceptions.domain_exceptions import LocationNameIsNotUniqueException
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class CreateLocationUseCase:
@@ -8,19 +13,13 @@ class CreateLocationUseCase:
         self._database = database
         self._repo = LocationRepository()
 
-    async def execute(self, name: str, is_published: bool = True) -> LocationSchema:
+    async def execute(self, data: Location) -> LocationSchema:
         with self._database.session() as session:
-            location = self._repo.create_location(
-                session=session,
-                name=name,
-                is_published=is_published
-            )
+            try:
+                location = self._repo.create_location(session=session, data=data)
+            except LocationNameAlreadyExistsException:
+                error = LocationNameIsNotUniqueException(name=data.name)
+                logger.error(error.get_detail())
+                raise error
 
-            location_data = {
-                "id":location.id,
-                "name":location.name,
-                "is_published":location.is_published,
-                "created_at":location.created_at
-            }
-
-            return LocationSchema.model_validate(obj=location_data)
+            return LocationSchema.model_validate(obj=location)

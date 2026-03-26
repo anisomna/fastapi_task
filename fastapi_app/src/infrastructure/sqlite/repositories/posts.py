@@ -1,11 +1,12 @@
 from typing import Type, List
 from datetime import datetime
+from sqlalchemy import insert, select
 from sqlalchemy.orm import Session
 from infrastructure.sqlite.models.posts import Post
-from infrastructure.sqlite.models.user import User
-from infrastructure.sqlite.models.location import Location
-from infrastructure.sqlite.models.category import Category
-from schemas.post import Post as PostSchema
+from infrastructure.sqlite.models.users import User
+from infrastructure.sqlite.models.locations import Location
+from infrastructure.sqlite.models.categories import Category
+from schemas.posts import Post as PostSchema
 from core.exceptions.database_exceptions import (
     PostNotFoundException,
     CategoryNotFoundException,
