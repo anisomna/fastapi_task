@@ -4,7 +4,10 @@ from sqlalchemy.orm import Session
 from infrastructure.sqlite.models.categories import Category
 from datetime import datetime
 from schemas.categories import Category as CategorySchema
-from core.exceptions.database_exceptions import CategoryNotFoundException
+from core.exceptions.database_exceptions import (
+    CategoryNotFoundException,
+    CategorySlugAlreadyExistsException
+)
 
 
 class CategoryRepository:
@@ -57,6 +60,10 @@ class CategoryRepository:
         return categories
 
     def create_category(self, session: Session, data: CategorySchema) -> Category:
+        existing = session.query(self._model).filter_by(slug=data.slug)
+        if existing:
+            raise CategorySlugAlreadyExistsException()
+            
         query = (
             insert(self._model)
             .values(data.model_dump(exclude_none=True))

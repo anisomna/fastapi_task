@@ -17,12 +17,6 @@ class CreateCategoryUseCase:
     async def execute(self, data: Category) -> CategorySchema:
         with self._database.session() as session:
             try:
-                existing_category = self._repo.get_category_by_slug(session, data.slug)
-                if existing_category:
-                    error = CategorySlugIsNotUniqueException(slug=data.slug)
-                    logger.error(error.get_detail())
-                    raise error
-
                 category = self._repo.create_category(session=session, data=data)
             except CategorySlugAlreadyExistsException:
                 error = CategorySlugIsNotUniqueException(slug=data.slug)
