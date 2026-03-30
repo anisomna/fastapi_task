@@ -60,8 +60,10 @@ class CategoryRepository:
         return categories
 
     def create_category(self, session: Session, data: CategorySchema) -> Category:
-        existing = session.query(self._model).filter_by(slug=data.slug)
-        if existing:
+        existing_category = session.scalar(
+            select(self._model).where(self._model.slug == data.slug)
+        )
+        if existing_category is not None:
             raise CategorySlugAlreadyExistsException()
             
         query = (
