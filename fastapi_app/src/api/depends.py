@@ -26,6 +26,16 @@ from domain.category.use_cases.get_published_categories import GetPublishedCateg
 from domain.category.use_cases.create_category import CreateCategoryUseCase
 from domain.category.use_cases.delete_category import DeleteCategoryUseCase
 
+from domain.auth.use_cases.authenticate_user import AuthenticateUserUseCase
+from domain.auth.use_cases.create_access_token import CreateAccessTokenUseCase
+
+
+def authenticate_user_use_case() -> AuthenticateUserUseCase:
+    return AuthenticateUserUseCase()
+
+def create_access_token_use_case() -> CreateAccessTokenUseCase:
+    return CreateAccessTokenUseCase()
+
 
 def get_all_users_use_case() -> GetAllUsersUseCase:
     return GetAllUsersUseCase()

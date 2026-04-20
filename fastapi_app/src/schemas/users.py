@@ -8,6 +8,8 @@ class User(BaseModel):
     first_name: str | None = Field(default=None, max_length=30)
     last_name: str | None = Field(default=None, max_length=30)
 
+    model_config = ConfigDict(from_attributes=True)
+
 
 class UserCreate(User):
     password: str

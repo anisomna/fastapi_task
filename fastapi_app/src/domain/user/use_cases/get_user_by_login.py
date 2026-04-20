@@ -14,7 +14,7 @@ class GetUserByLoginUseCase:
         self._database = database
         self._repo = UserRepository()
 
-    async def execute(self, login: str) -> UserSchema:
+    async def execute(self, login: str, current_user: UserSchema) -> UserSchema:
         with self._database.session() as session:
             try:
                 user = self._repo.get_user_by_login(session, login)
@@ -22,6 +22,9 @@ class GetUserByLoginUseCase:
             except UserNotFoundException:
                 error = UserNotFoundByLoginException(login=login)
                 logger.error(error.get_detail())
+                logger.error(
+                    f"Пользователь {current_user.login} довел приложение до ошибки: {error.get_detail()}"
+                )
                 raise error
 
             return UserSchema.model_validate(obj=user)

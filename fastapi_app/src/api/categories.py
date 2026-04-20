@@ -6,7 +6,7 @@ from core.exceptions.domain_exceptions import (
     CategorySlugIsNotUniqueException
 )
 from schemas.categories import CategoryResponse, Category
-
+from services.auth import AuthService
 from api.depends import (
     get_all_categories_use_case,
     get_category_by_id_use_case,
@@ -34,7 +34,12 @@ async def get_category_by_id(
             status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail()
         )
 
-@categories_router.post("/add_category", status_code=status.HTTP_201_CREATED, response_model=CategoryResponse)
+@categories_router.post(
+    "/add_category", 
+    status_code=status.HTTP_201_CREATED, 
+    response_model=CategoryResponse,
+    dependencies=[Depends(AuthService.get_current_user)]
+)
 async def create_category(
     data: Category,
     use_case = Depends(create_category_use_case)) -> CategoryResponse:
@@ -45,7 +50,11 @@ async def create_category(
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=exc.get_detail())
 
 
-@categories_router.delete("/delete/{category_id}", status_code=status.HTTP_204_NO_CONTENT)
+@categories_router.delete(
+    "/delete/{category_id}", 
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(AuthService.get_current_user)]
+)
 async def delete_category(
     category_id: int,
     use_case = Depends(delete_category_use_case)):

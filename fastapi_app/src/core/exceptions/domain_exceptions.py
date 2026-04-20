@@ -53,6 +53,13 @@ class UserLoginOrEmailIsNotUniqueException(BaseDomainException):
         return cls(detail=detail)
 
 
+class WrongPasswordException(BaseDomainException):
+    _exception_text_template = "Неверный пароль"
+
+    def __init__(self) -> None:
+        super().__init__(detail=self._exception_text_template)
+
+
 class CategoryNotFoundByIdException(BaseDomainException):
     _exception_text_template = "Категория с id = {id} не найдена"
 

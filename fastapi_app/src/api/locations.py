@@ -6,7 +6,7 @@ from core.exceptions.domain_exceptions import (
     LocationNameIsNotUniqueException
 )
 from schemas.locations import LocationResponse, Location
-
+from services.auth import AuthService
 from api.depends import (
     get_all_locations_use_case,
     get_location_by_id_use_case,
@@ -35,7 +35,12 @@ async def get_location_by_id(
         )
 
 
-@locations_router.post("/add_location", status_code=status.HTTP_201_CREATED, response_model=LocationResponse)
+@locations_router.post(
+    "/add_location",
+    status_code=status.HTTP_201_CREATED,
+    response_model=LocationResponse,
+    dependencies=[Depends(AuthService.get_current_user)]
+)
 async def create_location(
     data: Location,
     use_case = Depends(create_location_use_case)) -> LocationResponse:
@@ -46,7 +51,11 @@ async def create_location(
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=exc.get_detail())
 
 
-@locations_router.delete("/delete/{location_id}", status_code=status.HTTP_204_NO_CONTENT)
+@locations_router.delete(
+    "/delete/{location_id}", 
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(AuthService.get_current_user)]
+)
 async def delete_location(
     location_id: int,
     use_case = Depends(delete_location_use_case)):

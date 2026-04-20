@@ -8,7 +8,7 @@ from core.exceptions.domain_exceptions import (
     UserNotFoundByIdException
 )
 from schemas.posts import PostResponse, Post
-
+from services.auth import AuthService
 from api.depends import (
     get_all_posts_use_case,
     get_post_by_id_use_case,
@@ -37,7 +37,12 @@ async def get_post_by_id(
         )
 
 
-@posts_router.post("/create_post", status_code=status.HTTP_201_CREATED, response_model=PostResponse)
+@posts_router.post(
+    "/create_post",
+    status_code=status.HTTP_201_CREATED,
+    response_model=PostResponse,
+    dependencies=[Depends(AuthService.get_current_user)]
+)
 async def create_post(
     data: Post,
     use_case = Depends(create_post_use_case)) -> PostResponse:
@@ -54,7 +59,11 @@ async def create_post(
         )
 
 
-@posts_router.delete("/delete/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
+@posts_router.delete(
+    "/delete/{post_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(AuthService.get_current_user)]
+)
 async def delete_post(
     post_id: int,
     use_case = Depends(delete_post_use_case)):

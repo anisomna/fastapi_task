@@ -7,7 +7,7 @@ from core.exceptions.domain_exceptions import (
     UserNotFoundByIdException,
 )
 from schemas.comments import CommentResponse, Comment
-
+from services.auth import AuthService
 from api.depends import (
     get_all_comments_use_case,
     get_comment_by_id_use_case,
@@ -36,7 +36,12 @@ async def get_comment_by_id(
         )
 
 
-@comments_router.post("/create_comment", status_code=status.HTTP_201_CREATED, response_model=CommentResponse)
+@comments_router.post(
+    "/create_comment", 
+    status_code=status.HTTP_201_CREATED, 
+    response_model=CommentResponse,
+    dependencies=[Depends(AuthService.get_current_user)]
+)
 async def create_comment(
     data: Comment,
     use_case = Depends(create_comment_use_case)) -> CommentResponse:
@@ -49,7 +54,11 @@ async def create_comment(
         )
 
 
-@comments_router.delete("/delete/{comment_id}", status_code=status.HTTP_204_NO_CONTENT)
+@comments_router.delete(
+    "/delete/{comment_id}", 
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(AuthService.get_current_user)]
+)
 async def delete_comment(
     comment_id: int,
     use_case = Depends(delete_comment_use_case)):
