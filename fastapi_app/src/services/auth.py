@@ -34,7 +34,7 @@ class AuthService:
             if login is None:
                 raise CredentialsException(detail=AUTH_EXCEPTION_MESSAGE)
         except JWTError:
-            raise CredentialsException(detail=AUTH_EXCEPTION_MESSAGE)
+            raise CredentialsException(detail="Токен недействителен или истек")
 
         try:
             with _database.session() as session:
