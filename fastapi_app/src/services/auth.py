@@ -13,7 +13,6 @@ from infrastructure.sqlite.database import (
 )
 from infrastructure.sqlite.repositories.users import UserRepository
 
-AUTH_EXCEPTION_MESSAGE = "Невозможно проверить данные авторизации"
 SECRET_AUTH_KEY = SecretStr("DCTswSgPQuM3zSRM4g9FUFM5EAOr8ypfFwg7pK2eVV8")
 AUTH_ALGORITHM = "HS256"
 
@@ -21,6 +20,7 @@ AUTH_ALGORITHM = "HS256"
 class AuthService:
     @staticmethod
     async def _resolve_user_from_token(token: str) -> UserSchema:
+        _AUTH_EXCEPTION_MESSAGE = "Невозможно проверить данные авторизации"
         _database: Database = sqlite_database
         _repo: UserRepository = UserRepository()
 
@@ -32,7 +32,7 @@ class AuthService:
             )
             login = payload.get('sub')
             if login is None:
-                raise CredentialsException(detail=AUTH_EXCEPTION_MESSAGE)
+                raise CredentialsException(detail=_AUTH_EXCEPTION_MESSAGE)
         except JWTError:
             raise CredentialsException(detail="Токен недействителен или истек")
 
