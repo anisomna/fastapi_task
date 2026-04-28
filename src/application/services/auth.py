@@ -1,0 +1,47 @@
+from typing import Annotated
+from fastapi import Depends
+from jose import JWTError, jwt
+from application.core.config import settings
+from application.core.exceptions.auth_exceptions import CredentialsException
+from application.core.exceptions.database_exceptions import UserNotFoundException
+from application.schemas.users import UserResponse as UserSchema
+from application.resources.auth import oauth2_scheme
+from application.infrastructure.postgres.database import (
+    database as postgres_database,
+    Database,
+)
+from application.infrastructure.postgres.repositories.users import UserRepository
+
+
+class AuthService:
+    @staticmethod
+    async def _resolve_user_from_token(token: str) -> UserSchema:
+        _AUTH_EXCEPTION_MESSAGE = "Невозможно проверить данные авторизации"
+        _database: Database = postgres_database
+        _repo: UserRepository = UserRepository()
+
+        try:
+            payload = jwt.decode(
+                token=token,
+                key=settings.SECRET_AUTH_KEY.get_secret_value(),
+                algorithms=[settings.AUTH_ALGORITHM],
+            )
+            login = payload.get('sub')
+            if login is None:
+                raise CredentialsException(detail=_AUTH_EXCEPTION_MESSAGE)
+        except JWTError:
+            raise CredentialsException(detail="Токен недействителен или истек")
+
+        try:
+            with _database.session() as session:
+                user = _repo.get_user_by_login(session=session, login=login)
+        except UserNotFoundException:
+            raise CredentialsException(detail="Пользователь не найден")
+
+        return UserSchema.model_validate(obj=user)
+
+    @staticmethod
+    async def get_current_user(
+        token: Annotated[str, Depends(oauth2_scheme)],
+    ) -> UserSchema:
+        return await AuthService._resolve_user_from_token(token=token)
