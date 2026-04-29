@@ -2,6 +2,7 @@ from fastapi.responses import FileResponse
 from application.infrastructure.postgres.database import database
 from application.infrastructure.postgres.repositories.posts import PostRepository
 from application.core.exceptions.domain_exceptions import PostNotFoundByIdException, PostHasNoImageException
+from application.core.exceptions.database_exceptions import PostNotFoundException
 import logging
 
 logger = logging.getLogger(__name__)

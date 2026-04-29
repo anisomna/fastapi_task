@@ -14,9 +14,9 @@ class GetCategoryBySlugUseCase:
         self._repo = CategoryRepository()
 
     async def execute(self, slug: int) -> CategorySchema:
-        with self._database.session() as session:
+        async with self._database.session() as session:
             try:
-                category = self._repo.get_category_by_slug(session, slug)
+                category = await self._repo.get_category_by_slug(session, slug)
             except CategoryNotFoundException:
                 error = CategoryNotFoundBySlugException(slug=slug)
                 logger.error(error.get_detail())

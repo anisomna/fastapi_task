@@ -6,15 +6,12 @@ services:
       - db_data:/var/lib/postgresql/data
     env_file:
       - .env
-    user: ${POSTGRES_USER}
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    networks:
-      - app_network
-    ports:
-      - '127.0.0.1:5436:5432'
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready" ]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -32,19 +29,12 @@ services:
       context: .
     pull_policy: build
     entrypoint: sh -c "./src/start.sh"
-    networks:
-      - app_network
     depends_on:
-      - postgres
-
-
-networks:
-  app_network:
-    name: app_network
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.28.0.0/16
+      postgres:
+        condition: service_healthy
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
 
 volumes:
   db_data:

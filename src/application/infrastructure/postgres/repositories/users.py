@@ -1,10 +1,10 @@
-from typing import Type, List
-from sqlalchemy import insert, select, or_
+from typing import Type, List, Optional
+from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
+from pydantic import EmailStr
 from application.infrastructure.postgres.models.users import User
 from application.schemas.users import UserCreate as UserSchema
-from pydantic import EmailStr
 from application.core.exceptions.database_exceptions import (
     UserNotFoundException,
     UserEmailAlreadyExistsException,
@@ -18,8 +18,9 @@ class UserRepository:
         self._model: Type[User] = User
 
     async def get_all_users(self, session: AsyncSession) -> List[User]:
-        query = session.query(self._model)
-        users = query.all()
+        query = select(self._model)
+        result = await session.execute(query)
+        users = result.scalars().all()
 
         if not users:
             raise UserNotFoundException()
@@ -27,11 +28,9 @@ class UserRepository:
         return users
 
     async def get_user_by_id(self, session: AsyncSession, user_id: int) -> User:
-        query = (
-            select(self._model)
-            .where(self._model.id == user_id)
-        )
-        user = session.scalar(query)
+        query = select(self._model).where(self._model.id == user_id)
+        result = await session.execute(query)
+        user = result.scalar_one_or_none()
 
         if not user:
             raise UserNotFoundException()
@@ -39,23 +38,19 @@ class UserRepository:
         return user
 
     async def get_user_by_login(self, session: AsyncSession, login: str) -> User:
-        query = (
-            select(self._model)
-            .where(self._model.login == login)
-        )
-        user = session.scalar(query)
+        query = select(self._model).where(self._model.login == login)
+        result = await session.execute(query)
+        user = result.scalar_one_or_none()
 
         if not user:
             raise UserNotFoundException()
 
         return user
     
-    async def get_user_by_email(self, session: AsyncSession, email: str) -> User:
-        query = (
-            select(self._model)
-            .where(self._model.email == email)
-        )
-        user = session.scalar(query)
+    async def get_user_by_email(self, session: AsyncSession, email: EmailStr) -> User:
+        query = select(self._model).where(self._model.email == email)
+        result = await session.execute(query)
+        user = result.scalar_one_or_none()
 
         if not user:
             raise UserNotFoundException()
@@ -63,13 +58,14 @@ class UserRepository:
         return user
 
     async def create_user(self, session: AsyncSession, data: UserSchema) -> User:
-        existing_user = session.scalar(
-            select(self._model).where(
-                or_(self._model.login == data.login,
-                    self._model.email == data.email,
-                )
+        query = select(self._model).where(
+            or_(
+                self._model.login == data.login,
+                self._model.email == data.email,
             )
         )
+        result = await session.execute(query)
+        existing_user = result.scalar_one_or_none()
 
         if existing_user is not None:
             if existing_user.login == data.login:
@@ -80,18 +76,17 @@ class UserRepository:
         user_data = data.model_dump()
         user_data['password'] = get_password_hash(user_data['password'])
 
-        query = (
-            insert(self._model)
-            .values(data.model_dump())
-            .returning(self._model)
-        )
-        user = session.scalar(query)
-
+        user = self._model(**user_data)
+        session.add(user)
+        await session.flush()
+        await session.refresh(user)
+        
         return user
 
     async def delete_user(self, session: AsyncSession, user_id: int) -> None:
-        user = self.get_user_by_id(session, user_id)
+        user = await self.get_user_by_id(session, user_id)
         if user:
-            session.delete(user)
+            await session.delete(user)
+            await session.flush()
         else:
             raise UserNotFoundException()

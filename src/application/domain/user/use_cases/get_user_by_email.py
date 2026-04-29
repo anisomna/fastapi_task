@@ -15,9 +15,9 @@ class GetUserByEmailUseCase:
         self._repo = UserRepository()
 
     async def execute(self, email: str) -> UserSchema:
-        with self._database.session() as session:
+        async with self._database.session() as session:
             try:
-                user = self._repo.get_user_by_email(session, email)
+                user = await self._repo.get_user_by_email(session, email)
 
             except UserNotFoundException:
                 error = UserNotFoundByEmailException(email=email)

@@ -14,9 +14,9 @@ class CreateLocationUseCase:
         self._repo = LocationRepository()
 
     async def execute(self, data: Location) -> LocationSchema:
-        with self._database.session() as session:
+        async with self._database.session() as session:
             try:
-                location = self._repo.create_location(session=session, data=data)
+                location = await self._repo.create_location(session=session, data=data)
             except LocationNameAlreadyExistsException:
                 error = LocationNameIsNotUniqueException(name=data.name)
                 logger.error(error.get_detail())

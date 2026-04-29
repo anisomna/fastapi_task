@@ -30,10 +30,10 @@ class CreateUserUseCase:
             last_name=data.last_name,
             password=get_password_hash(data.password)
         )
-        
-        with self._database.session() as session:
+
+        async with self._database.session() as session:
             try:
-                user = self._repo.create_user(session=session, data=user_data)
+                user = await self._repo.create_user(session=session, data=user_data)
             except UserLoginAlreadyExistsException:
                 error = UserLoginOrEmailIsNotUniqueException.from_login(
                     login=data.login

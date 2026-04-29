@@ -10,8 +10,8 @@ class GetAllPostsUseCase:
         self._repo = PostRepository()
 
     async def execute(self) -> List[PostSchema]:
-        with self._database.session() as session:
-            posts = self._repo.get_all_posts(session)
+        async with self._database.session() as session:
+            posts = await self._repo.get_all_posts(session)
 
             result = []
             for post in posts:

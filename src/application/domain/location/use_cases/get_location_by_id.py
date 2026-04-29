@@ -14,9 +14,9 @@ class GetLocationByIdUseCase:
         self._repo = LocationRepository()
 
     async def execute(self, location_id: int) -> LocationSchema:
-        with self._database.session() as session:
+        async with self._database.session() as session:
             try:
-                location = self._repo.get_location_by_id(session, location_id)
+                location = await self._repo.get_location_by_id(session, location_id)
             except LocationNotFoundException:
                 error = LocationNotFoundByIdException(id=location_id)
                 logger.error(error.get_detail())

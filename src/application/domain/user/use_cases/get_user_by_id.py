@@ -15,9 +15,9 @@ class GetUserByIdUseCase:
         self._repo = UserRepository()
 
     async def execute(self, user_id: int, current_user: UserSchema) -> UserSchema:
-        with self._database.session() as session:
+        async with self._database.session() as session:
             try:
-                user = self._repo.get_user_by_id(session, user_id)
+                user = await self._repo.get_user_by_id(session, user_id)
 
             except UserNotFoundException:
                 error = UserNotFoundByIdException(id=user_id)

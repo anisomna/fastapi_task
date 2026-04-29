@@ -10,8 +10,8 @@ class GetPublishedCategoriesUseCase:
         self._repo = CategoryRepository()
 
     async def execute(self) -> List[CategorySchema]:
-        with self._database.session() as session:
-            categories = self._repo.get_published_categories(session)
+        async with self._database.session() as session:
+            categories = await self._repo.get_published_categories(session)
 
             result = []
             for category in categories:

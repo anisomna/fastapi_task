@@ -23,9 +23,9 @@ class CreateCommentUseCase:
 
     async def execute(
         self, data: Comment) -> CommentSchema:
-        with self._database.session() as session:
+        async with self._database.session() as session:
             try:
-                comment = self._repo.create_comment(session=session, data=data)
+                comment = await self._repo.create_comment(session=session, data=data)
             except PostNotFoundException:
                 error = PostNotFoundByIdException(id=data.post_id)
                 logger.error(error.get_detail())

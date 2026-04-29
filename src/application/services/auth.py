@@ -33,8 +33,8 @@ class AuthService:
             raise CredentialsException(detail="Токен недействителен или истек")
 
         try:
-            with _database.session() as session:
-                user = _repo.get_user_by_login(session=session, login=login)
+            async with _database.session() as session:
+                user = await _repo.get_user_by_login(session=session, login=login)
         except UserNotFoundException:
             raise CredentialsException(detail="Пользователь не найден")
 

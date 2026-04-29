@@ -10,8 +10,8 @@ class GetAllLocationsUseCase:
         self._repo = LocationRepository()
 
     async def execute(self) -> List[LocationSchema]:
-        with self._database.session() as session:
-            locations = self._repo.get_all_locations(session)
+        async with self._database.session() as session:
+            locations = await self._repo.get_all_locations(session)
 
             result = []
             for location in locations:

@@ -1,6 +1,6 @@
 from typing import Type, List
 from datetime import datetime
-from sqlalchemy import insert, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from application.infrastructure.postgres.models.posts import Post
 from application.infrastructure.postgres.models.users import User
@@ -23,8 +23,9 @@ class PostRepository:
         self._category_model: Type[Category] = Category
 
     async def get_all_posts(self, session: AsyncSession) -> List[Post]:
-        query = session.query(self._model)
-        posts = query.all()
+        query = select(self._model)
+        result = await session.execute(query)
+        posts = result.scalars().all()
 
         if not posts:
             raise PostNotFoundException()
@@ -33,12 +34,13 @@ class PostRepository:
 
     async def get_published_posts(self, session: AsyncSession, limit: int = 10) -> List[Post]:
         query = (
-            session.query(self._model)
+            select(self._model)
             .where(self._model.is_published == True)
             .order_by(self._model.pub_date.desc())
             .limit(limit)
         )
-        posts = query.all()
+        result = await session.execute(query)
+        posts = result.scalars().all()
 
         if not posts:
             raise PostNotFoundException()
@@ -46,11 +48,9 @@ class PostRepository:
         return posts
 
     async def get_post_by_id(self, session: AsyncSession, post_id: int) -> Post:
-        query = (
-            session.query(self._model)
-            .where(self._model.id == post_id)
-        )
-        post = query.scalar()
+        query = select(self._model).where(self._model.id == post_id)
+        result = await session.execute(query)
+        post = result.scalar_one_or_none()
 
         if not post:
             raise PostNotFoundException()
@@ -58,11 +58,9 @@ class PostRepository:
         return post
 
     async def get_posts_by_author(self, session: AsyncSession, author_id: int) -> List[Post]:
-        query = (
-            session.query(self._model)
-            .where(self._model.author_id == author_id)
-        )
-        posts = query.all()
+        query = select(self._model).where(self._model.author_id == author_id)
+        result = await session.execute(query)
+        posts = result.scalars().all()
 
         if not posts:
             raise PostNotFoundException()
@@ -70,32 +68,39 @@ class PostRepository:
         return posts
 
     async def create_post(self, session: AsyncSession, data: PostSchema) -> Post:
-        author = session.get(self._author_model, data.author_id)
+        author_query = select(self._author_model).where(self._author_model.id == data.author_id)
+        author_result = await session.execute(author_query)
+        author = author_result.scalar_one_or_none()
+        
         if not author:
             raise UserNotFoundException()
 
         if data.location_id is not None:
-            location = session.get(self._location_model, data.location_id)
+            location_query = select(self._location_model).where(self._location_model.id == data.location_id)
+            location_result = await session.execute(location_query)
+            location = location_result.scalar_one_or_none()
             if not location:
                 raise LocationNotFoundException()
 
         if data.category_id is not None:
-            category = session.get(self._category_model, data.category_id)
+            category_query = select(self._category_model).where(self._category_model.id == data.category_id)
+            category_result = await session.execute(category_query)
+            category = category_result.scalar_one_or_none()
             if not category:
                 raise CategoryNotFoundException()
 
-        query = (
-            insert(self._model)
-            .values(data.model_dump(exclude_none=True))
-            .returning(self._model)
-        )
-        post = session.scalar(query)
+        post_data = data.model_dump(exclude_none=True)
+        post = self._model(**post_data)
+        session.add(post)
+        await session.flush()
+        await session.refresh(post)
 
         return post
 
     async def delete_post(self, session: AsyncSession, post_id: int) -> None:
-        post = self.get_post_by_id(session, post_id)
+        post = await self.get_post_by_id(session, post_id)
         if post:
-            session.delete(post)
+            await session.delete(post)
+            await session.flush()
         else:
             raise PostNotFoundException()

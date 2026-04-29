@@ -14,9 +14,9 @@ class GetPostByIdUseCase:
         self._repo = PostRepository()
 
     async def execute(self, post_id: int) -> PostSchema:
-        with self._database.session() as session:
+        async with self._database.session() as session:
             try:
-                post = self._repo.get_post_by_id(session, post_id)
+                post = await self._repo.get_post_by_id(session, post_id)
             except PostNotFoundException:
                 error = PostNotFoundByIdException(id=post_id)
                 logger.error(error.get_detail())

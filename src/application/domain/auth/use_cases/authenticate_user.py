@@ -20,8 +20,8 @@ class AuthenticateUserUseCase:
         password: str,
     ) -> UserSchema:
         try:
-            with self._database.session() as session:
-                user = self._repo.get_user_by_login(session=session, login=login)
+            async with self._database.session() as session:
+                user = await self._repo.get_user_by_login(session=session, login=login)
         except UserNotFoundException:
             error = UserNotFoundByLoginException(login=login)
             logger.error(error.get_detail())
