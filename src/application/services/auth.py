@@ -1,23 +1,20 @@
 from typing import Annotated
 from fastapi import Depends
 from jose import JWTError, jwt
-from application.core.config import settings
+
 from application.core.exceptions.auth_exceptions import CredentialsException
 from application.core.exceptions.database_exceptions import UserNotFoundException
-from application.schemas.users import UserResponse as UserSchema
+from application.schemas.users import UserResponse
 from application.resources.auth import oauth2_scheme
-from application.infrastructure.postgres.database import (
-    database as postgres_database,
-    Database,
-)
+from application.infrastructure.postgres.database import database, PostgresDatabase
 from application.infrastructure.postgres.repositories.users import UserRepository
-
+from application.core.config import settings
 
 class AuthService:
     @staticmethod
-    async def _resolve_user_from_token(token: str) -> UserSchema:
+    async def _resolve_user_from_token(token: str) -> UserResponse:
         _AUTH_EXCEPTION_MESSAGE = "Невозможно проверить данные авторизации"
-        _database: Database = postgres_database
+        _database: PostgresDatabase = database
         _repo: UserRepository = UserRepository()
 
         try:
@@ -38,10 +35,10 @@ class AuthService:
         except UserNotFoundException:
             raise CredentialsException(detail="Пользователь не найден")
 
-        return UserSchema.model_validate(obj=user)
+        return UserResponse.model_validate(obj=user)
 
     @staticmethod
     async def get_current_user(
         token: Annotated[str, Depends(oauth2_scheme)],
-    ) -> UserSchema:
+    ) -> UserResponse:
         return await AuthService._resolve_user_from_token(token=token)

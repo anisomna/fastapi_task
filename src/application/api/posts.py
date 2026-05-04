@@ -6,7 +6,9 @@ from application.core.exceptions.domain_exceptions import (
     PostNotFoundByIdException,
     CategoryNotFoundByIdException,
     LocationNotFoundByIdException,
-    UserNotFoundByIdException
+    UserNotFoundByIdException,
+    UploadFileIsNotImageException,
+    PostHasNoImageException
 )
 from application.schemas.posts import PostImageResponse, PostResponse, Post
 from application.services.auth import AuthService
@@ -43,32 +45,44 @@ async def get_post_by_id(
 @posts_router.get(
     "/image/post/{post_id}", 
     status_code=status.HTTP_200_OK, 
-    response_class=FileResponse
+    response_class=FileResponse,
+    dependencies=[Depends(AuthService.get_current_user)]
 )
 async def get_post_image(
     post_id: int,
     use_case = Depends(get_post_image_use_case)) -> FileResponse:
     try:
         return await use_case.execute(post_id=post_id)
-    except (
-        PostNotFoundByIdException, 
-        PostHasNoImageException,
-    ) as exc:
+    except (PostNotFoundByIdException, PostHasNoImageException) as exc:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=exc.get_detail()
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail=exc.get_detail()
         )
 
 
 @posts_router.post(
-    "/image/post", 
-    status_code=status.HTTP_201_CREATED, 
-    response_model=PostImageResponse
+    "/image/post/{post_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=PostImageResponse,
+    dependencies=[Depends(AuthService.get_current_user)]
 )
 async def add_post_image(
+    post_id: int,
     image: UploadFile = File(...),
     use_case = Depends(add_post_image_use_case)) -> PostImageResponse:
-    return await use_case.execute(image=image)
-
+    try:
+        return await use_case.execute(post_id=post_id, image=image)
+    except PostNotFoundByIdException as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail=exc.get_detail()
+        )
+    except UploadFileIsNotImageException as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, 
+            detail=exc.get_detail()
+        )
+    
 
 @posts_router.post(
     "/create_post",

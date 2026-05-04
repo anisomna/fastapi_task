@@ -3,6 +3,7 @@ from application.infrastructure.postgres.database import database
 from application.infrastructure.postgres.repositories.posts import PostRepository
 from application.core.exceptions.domain_exceptions import PostNotFoundByIdException, PostHasNoImageException
 from application.core.exceptions.database_exceptions import PostNotFoundException
+import os
 import logging
 
 logger = logging.getLogger(__name__)
@@ -12,21 +13,35 @@ class GetPostImageUseCase:
     def __init__(self) -> None:
         self._database = database
         self._repo = PostRepository()
-        self.image_folder = "./../images"
+        self.image_folder = "/fastapi_app/images"
 
     async def execute(self, post_id: int) -> FileResponse:
         try:
             async with self._database.session() as session:
                 post = await self._repo.get_post_by_id(session, post_id)
         except PostNotFoundException:
-                error = PostNotFoundByIdException(id=post_id)
-                logger.error(error.get_detail())
-                raise error
+            error = PostNotFoundByIdException(id=post_id)
+            logger.error(error.get_detail())
+            raise error
 
-        if not post.image_path:
+        if not post.image:
             error = PostHasNoImageException()
             logger.error(error.get_detail())
             raise error
 
-        full_image_path: str = f"{self.image_folder}/{post.image_path}.jpeg"
-        return FileResponse(full_image_path, media_type="image/jpeg")
+        full_image_path = f"{self.image_folder}/{post.image}"
+        
+        if not os.path.exists(full_image_path):
+            error = PostHasNoImageException()
+            logger.error(error.get_detail())
+            raise error
+        
+        media_type = "image/jpeg"
+        if post.image.lower().endswith('.png'):
+            media_type = "image/png"
+        elif post.image.lower().endswith('.gif'):
+            media_type = "image/gif"
+        elif post.image.lower().endswith('.jpg') or post.image.lower().endswith('.jpeg'):
+            media_type = "image/jpeg"
+            
+        return FileResponse(full_image_path, media_type=media_type)

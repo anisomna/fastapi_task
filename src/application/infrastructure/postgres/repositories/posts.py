@@ -1,6 +1,6 @@
 from typing import Type, List
 from datetime import datetime
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from application.infrastructure.postgres.models.posts import Post
 from application.infrastructure.postgres.models.users import User
@@ -66,6 +66,30 @@ class PostRepository:
             raise PostNotFoundException()
 
         return posts
+    
+    async def update_post_image(self, session: AsyncSession, post_id: int, image_path: str) -> Post:
+        query = (
+            update(self._model)
+            .where(self._model.id == post_id)
+            .values(image=image_path)
+            .returning(self._model)
+        )
+        
+        result = await session.execute(query)
+        updated_post = result.scalar_one_or_none()
+        
+        if not updated_post:
+            raise PostNotFoundException()
+        
+        return updated_post
+    
+    async def get_post_image(self, session: AsyncSession, post_id: int) -> str:
+        query = select(self._model.image).where(self._model.id == post_id)
+        result = await session.execute(query)
+        image_path = result.scalar_one_or_none()
+        if not image_path:
+            raise PostNotFoundException("Данный пост не содержит изображения")
+        return image_path
 
     async def create_post(self, session: AsyncSession, data: PostSchema) -> Post:
         author_query = select(self._author_model).where(self._author_model.id == data.author_id)

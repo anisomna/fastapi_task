@@ -1,4 +1,5 @@
 from application.infrastructure.postgres.database import database
+from sqlalchemy.ext.asyncio import AsyncSession
 from application.infrastructure.postgres.repositories.users import UserRepository
 from application.core.exceptions.database_exceptions import UserNotFoundException
 from application.core.exceptions.domain_exceptions import UserNotFoundByIdException
@@ -13,7 +14,7 @@ class DeleteUserUseCase:
         self._database = database
         self._repo = UserRepository()
 
-    async def execute(self, user_id: str, current_user: UserResponse) -> None:
+    async def execute(self, session: AsyncSession, user_id: str, current_user: UserResponse) -> None:
         async with self._database.session() as session:
             try:
                 await self._repo.delete_user(session=session, user_id=user_id)

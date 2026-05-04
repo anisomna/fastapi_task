@@ -1,14 +1,7 @@
 # fastapi_django_refactor
 
-# как запустить
- - создать виртуальное окружение (venv) python (не ниже 3.11)
-   - python -m venv venv
-   - source venv/Scripts/activate
- - в терминале прописать
-   - pip install "fastapi[standard]"
-   - pip install uvicorn
-   - pip install sqlalchemy
-   - pip install alembic
- - нажать правой кнопкой на папку `src`
-   - выбрать `Mark Directory as` -> `Source Root`
- - запустить файл main.py (fastapi dev main.py)
+# Запуск с Docker
+Запустите контейнеры:
+- docker-compose up -d --build
+Примените миграции:
+- docker exec -it fastapi_backend alembic upgrade head

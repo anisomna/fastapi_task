@@ -22,7 +22,6 @@ class User(Base):
         unique=True
     )
     password: Mapped[str] = mapped_column(
-        String(100),
         nullable=False
     )
     first_name: Mapped[str] = mapped_column(

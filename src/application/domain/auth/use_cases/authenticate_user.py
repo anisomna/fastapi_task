@@ -1,29 +1,31 @@
 import logging
-from application.infrastructure.postgres.database import database
+
 from application.infrastructure.postgres.repositories.users import UserRepository
-from application.schemas.users import User as UserSchema
+from application.schemas.users import UserResponse as UserSchema
 from application.resources.auth import verify_password
 from application.core.exceptions.database_exceptions import UserNotFoundException
 from application.core.exceptions.domain_exceptions import UserNotFoundByLoginException, WrongPasswordException
+from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 
 
 class AuthenticateUserUseCase:
     def __init__(self) -> None:
-        self._database = database
-        self._repo = UserRepository()
+        pass
 
     async def execute(
         self,
         login: str,
         password: str,
+        session: AsyncSession,
     ) -> UserSchema:
+        repo = UserRepository()
         try:
-            async with self._database.session() as session:
-                user = await self._repo.get_user_by_login(session=session, login=login)
+            user = await repo.get_user_by_login(session=session, login=login)
         except UserNotFoundException:
-            error = UserNotFoundByLoginException(login=login)
+            error = UserNotFoundByLoginException(
+                login=login)
             logger.error(error.get_detail())
             raise error
 
@@ -31,5 +33,5 @@ class AuthenticateUserUseCase:
             error = WrongPasswordException()
             logger.error(error.get_detail())
             raise error
-            
-        return UserSchema.model_validate(user, from_attributes=True)
+
+        return UserSchema.model_validate(obj=user)

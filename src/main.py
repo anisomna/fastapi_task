@@ -1,6 +1,4 @@
-from fastapi import FastAPI, Request, status
-from fastapi.responses import JSONResponse
-from fastapi.exceptions import HTTPException
+import logging
 import asyncio
 import uvicorn
 import sys
@@ -12,24 +10,18 @@ from application.app import create_app
 
 app = create_app()
 
-@app.exception_handler(HTTPException)
-async def http_exception_handler(request: Request, exc: HTTPException):
-    if exc.status_code == status.HTTP_401_UNAUTHORIZED:
-        return JSONResponse(
-            status_code=exc.status_code,
-            content={
-                "detail": "Доступ запрещен, требуется авторизация"
-            },
-            headers=exc.headers,
-        )
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={"detail": exc.detail},
-    )
+app = create_app()
 
-async def main() -> None:
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+)
+
+
+async def run() -> None:
     config = uvicorn.Config(
-        "main:app", host="0.0.0.0", port=8000, reload=False
+        "main:app", host="127.0.0.1", port=8000, reload=False
     )
     server = uvicorn.Server(config=config)
     tasks = (
@@ -40,4 +32,5 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(run())

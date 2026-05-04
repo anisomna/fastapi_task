@@ -1,5 +1,6 @@
+import uuid
 from typing import Type, List, Optional
-from sqlalchemy import select, or_
+from sqlalchemy import select, or_, insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from pydantic import EmailStr
@@ -7,8 +8,8 @@ from application.infrastructure.postgres.models.users import User
 from application.schemas.users import UserCreate as UserSchema
 from application.core.exceptions.database_exceptions import (
     UserNotFoundException,
-    UserEmailAlreadyExistsException,
-    UserLoginAlreadyExistsException
+    UserLoginAlreadyExistsException,
+    UserEmailAlreadyExistsException
 )
 from application.resources.auth import get_password_hash
 
@@ -56,7 +57,7 @@ class UserRepository:
             raise UserNotFoundException()
 
         return user
-
+    
     async def create_user(self, session: AsyncSession, data: UserSchema) -> User:
         query = select(self._model).where(
             or_(
@@ -90,3 +91,4 @@ class UserRepository:
             await session.flush()
         else:
             raise UserNotFoundException()
+        

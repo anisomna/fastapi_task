@@ -28,6 +28,5 @@ class UserCreate(User):
 
 class UserResponse(User):
     id: int
-    password: SecretStr
 
     model_config = ConfigDict(from_attributes=True)
