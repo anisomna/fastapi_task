@@ -2,7 +2,7 @@
 
 # Запуск с Docker
 Запустите контейнеры:
-- docker-compose up -d --build
+- docker-compose up -d
 
 Завершить работу:
 - docker-compose down
