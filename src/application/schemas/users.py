@@ -1,4 +1,4 @@
-from pydantic import BaseModel, SecretStr, Field, EmailStr, ConfigDict, field_validator
+from pydantic import BaseModel, Field, EmailStr, ConfigDict, field_validator
 from fastapi import HTTPException, status
 
 
@@ -7,7 +7,6 @@ class User(BaseModel):
     email: EmailStr
     first_name: str | None = Field(default=None, max_length=30)
     last_name: str | None = Field(default=None, max_length=30)
-
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -28,5 +27,9 @@ class UserCreate(User):
 
 class UserResponse(User):
     id: int
-
+    image: str | None = Field(default=None, description='Аватар пользователя')
     model_config = ConfigDict(from_attributes=True)
+
+
+class UserImageResponse(BaseModel):
+    image: str

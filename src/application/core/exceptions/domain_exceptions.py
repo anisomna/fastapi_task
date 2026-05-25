@@ -36,6 +36,13 @@ class UserNotFoundByEmailException(BaseDomainException):
         super().__init__(detail=self._exception_text_template)
 
 
+class UserHasNoImageException(BaseDomainException):
+    _exception_text_template = "У данного пользователя не выставлен аватар"
+
+    def __init__(self) -> None:
+        super().__init__(detail=self._exception_text_template)
+
+
 class UserLoginOrEmailIsNotUniqueException(BaseDomainException):
     def __init__(self, detail: str) -> None:
         self._exception_text_template = detail
@@ -122,7 +129,7 @@ class UploadFileIsNotImageException(BaseDomainException):
 
 
 class PostHasNoImageException(BaseDomainException):
-    _exception_text_template = "Данный пост не содержит изображения"
+    _exception_text_template = "Данная публикация не содержит изображения"
 
     def __init__(self) -> None:
         super().__init__(detail=self._exception_text_template)
@@ -134,4 +141,11 @@ class CommentNotFoundByIdException(BaseDomainException):
     def __init__(self, id: int) -> None:
         self._exception_text_template = self._exception_text_template.format(id=id)
 
+        super().__init__(detail=self._exception_text_template)
+
+
+class CommentHasNoImageException(BaseDomainException):
+    _exception_text_template = "Данный комментарий не содержит изображения"
+
+    def __init__(self) -> None:
         super().__init__(detail=self._exception_text_template)

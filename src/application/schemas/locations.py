@@ -10,5 +10,4 @@ class Location(BaseModel):
 
 class LocationResponse(Location):
     id: int
-
     model_config = ConfigDict(from_attributes=True)

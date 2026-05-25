@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime
+from typing import List
 
 
 class Post(BaseModel):
@@ -17,8 +18,7 @@ class Post(BaseModel):
 
 class PostResponse(Post):
     id: int
-    image: str | None = Field(default=None, description='URL-ссылка на изображение')
-
+    images: List[str] = Field(default_factory=list, description="Список изображений")
     model_config = ConfigDict(from_attributes=True)
 
 

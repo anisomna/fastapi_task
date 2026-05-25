@@ -1,6 +1,7 @@
 from ..database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Text, DateTime, Boolean, ForeignKey
+from sqlalchemy import String, Text, DateTime, Boolean, ForeignKey, JSON
+from typing import List
 from datetime import datetime
 
 
@@ -44,9 +45,10 @@ class Post(Base):
         DateTime,
         default=datetime.now
     )
-    image: Mapped[str] = mapped_column(
-        String(1000),
-        nullable=True
+    images: Mapped[List[str]] = mapped_column(
+        JSON, 
+        nullable=True, 
+        default=list
     )
 
     author = relationship("User", back_populates="posts")

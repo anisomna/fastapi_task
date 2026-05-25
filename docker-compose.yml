@@ -18,6 +18,9 @@ services:
       start_period: 5s
     env_file:
       - .env
+    networks:
+      - app_network
+
   app:
     build: .
     image: fastapi_backend:latest
@@ -27,7 +30,15 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      - app_network
 
-
+networks:
+  app_network:
+    name: app_network
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
 volumes:
   postgres_data:

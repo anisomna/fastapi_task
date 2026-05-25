@@ -1,18 +1,23 @@
 from application.domain.user.use_cases.get_all_users import GetAllUsersUseCase
 from application.domain.user.use_cases.get_user_by_id import GetUserByIdUseCase
 from application.domain.user.use_cases.get_user_by_login import GetUserByLoginUseCase
+from application.domain.user.use_cases.add_user_avatar import AddUserAvatarUseCase
+from application.domain.user.use_cases.get_user_avatar import GetUserAvatarUseCase
 from application.domain.user.use_cases.create_user import CreateUserUseCase
 from application.domain.user.use_cases.delete_user import DeleteUserUseCase
+from application.domain.user.use_cases.update_user import UpdateUserUseCase
 
 from application.domain.post.use_cases.get_all_posts import GetAllPostsUseCase
 from application.domain.post.use_cases.get_post_by_id import GetPostByIdUseCase
 from application.domain.post.use_cases.add_post_image import AddPostImageUseCase
-from application.domain.post.use_cases.get_post_image import GetPostImageUseCase
+from application.domain.post.use_cases.get_post_image import GetPostImagesUseCase
 from application.domain.post.use_cases.create_post import CreatePostUseCase
 from application.domain.post.use_cases.delete_post import DeletePostUseCase
 
 from application.domain.comments.use_cases.get_all_comments import GetAllCommentsUseCase
 from application.domain.comments.use_cases.get_comment_by_id import GetCommentByIdUseCase
+from application.domain.comments.use_cases.add_comment_image import AddCommentImageUseCase
+from application.domain.comments.use_cases.get_comment_image import GetCommentImagesUseCase
 from application.domain.comments.use_cases.create_comment import CreateCommentUseCase
 from application.domain.comments.use_cases.delete_comment import DeleteCommentUseCase
 
@@ -48,11 +53,20 @@ def get_user_by_id_use_case() -> GetUserByIdUseCase:
 def get_user_by_login_use_case() -> GetUserByLoginUseCase:
     return GetUserByLoginUseCase()
 
+def add_user_avatar_use_case() -> AddUserAvatarUseCase:
+    return AddUserAvatarUseCase()
+
+def get_user_avatar_use_case() -> GetUserAvatarUseCase:
+    return GetUserAvatarUseCase()
+
 def create_user_use_case() -> CreateUserUseCase:
     return CreateUserUseCase()
 
 def delete_user_use_case() -> DeleteUserUseCase:
     return DeleteUserUseCase()
+
+def update_user_use_case() -> UpdateUserUseCase:
+    return UpdateUserUseCase()
 
 
 def get_all_posts_use_case() -> GetAllPostsUseCase:
@@ -64,8 +78,8 @@ def get_post_by_id_use_case() -> GetPostByIdUseCase:
 def add_post_image_use_case() -> AddPostImageUseCase:
     return AddPostImageUseCase()
 
-def get_post_image_use_case() -> GetPostImageUseCase:
-    return GetPostImageUseCase()
+def get_post_images_use_case() -> GetPostImagesUseCase:
+    return GetPostImagesUseCase()
 
 def create_post_use_case() -> CreatePostUseCase:
     return CreatePostUseCase()
@@ -79,6 +93,12 @@ def get_all_comments_use_case() -> GetAllCommentsUseCase:
 
 def get_comment_by_id_use_case() -> GetCommentByIdUseCase:
     return GetCommentByIdUseCase()
+
+def add_comment_image_use_case() -> AddCommentImageUseCase:
+    return AddCommentImageUseCase()
+
+def get_comment_images_use_case() -> GetCommentImagesUseCase:
+    return GetCommentImagesUseCase()
 
 def create_comment_use_case() -> CreateCommentUseCase:
     return CreateCommentUseCase()

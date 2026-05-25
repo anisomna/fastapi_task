@@ -3,28 +3,28 @@ import shutil
 from pathlib import Path
 from fastapi import UploadFile
 from application.infrastructure.postgres.database import database
-from application.infrastructure.postgres.repositories.posts import PostRepository
-from application.schemas.posts import PostImageResponse
+from application.infrastructure.postgres.repositories.comments import CommentRepository
+from application.schemas.comments import CommentImageResponse
 from application.core.exceptions.domain_exceptions import (
     UploadFileIsNotImageException,
-    PostNotFoundByIdException,
+    CommentNotFoundByIdException,
 )
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-class AddPostImageUseCase:
+class AddCommentImageUseCase:
     def __init__(self) -> None:
-        self.image_folder = Path("/fastapi_app/images")
-        self._repo = PostRepository()
+        self.image_folder = Path("/fastapi_app/comment_images")
+        self._repo = CommentRepository()
 
-    async def execute(self, post_id: int, image: UploadFile) -> PostImageResponse:
+    async def execute(self, comment_id: int, image: UploadFile) -> CommentImageResponse:
         async with database.session() as session:
             try:
-                post = await self._repo.get_post_by_id(session, post_id)
+                comment = await self._repo.get_comment_by_id(session, comment_id)
             except Exception:
-                raise PostNotFoundByIdException(id=post_id)
+                raise CommentNotFoundByIdException(id=comment_id)
             if not image.filename:
                 raise UploadFileIsNotImageException()
             
@@ -39,11 +39,11 @@ class AddPostImageUseCase:
             
             with open(new_image_path, "wb") as buffer:
                 shutil.copyfileobj(image.file, buffer)
-            await self._repo.add_post_images(
+            await self._repo.add_comment_images(
                 session=session,
-                post_id=post_id,
+                comment_id=comment_id,
                 image_paths=[new_image_filename]  
             )
             await session.commit()
 
-            return PostImageResponse(post_id=post_id, image=new_image_filename)
+            return CommentImageResponse(comment_id=comment_id, image=new_image_filename)

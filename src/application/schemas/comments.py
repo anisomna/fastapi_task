@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime
+from typing import List
 
 
 class Comment(BaseModel):
@@ -11,5 +12,9 @@ class Comment(BaseModel):
 
 class CommentResponse(Comment):
     id: int
-
+    images: List[str] = Field(default_factory=list, description="Список изображений")
     model_config = ConfigDict(from_attributes=True)
+
+
+class CommentImageResponse(BaseModel):
+    image: str

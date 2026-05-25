@@ -12,5 +12,4 @@ class Category(BaseModel):
 
 class CategoryResponse(Category):
     id: int
-
     model_config = ConfigDict(from_attributes=True)

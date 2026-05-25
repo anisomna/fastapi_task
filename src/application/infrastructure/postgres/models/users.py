@@ -1,6 +1,6 @@
 from ..database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String
+from sqlalchemy import String, JSON
 
 
 class User(Base):
@@ -30,6 +30,10 @@ class User(Base):
     )
     last_name: Mapped[str] = mapped_column(
         String(30),
+        nullable=True
+    )
+    image: Mapped[str] = mapped_column(
+        JSON,
         nullable=True
     )
 
