@@ -15,7 +15,6 @@ class GetPostImagesUseCase:
     async def execute(self, post_id: int) -> List[PostImageResponse]:
         async with database.session() as session:
             try:
-                post = await self._repo.get_post_by_id(session, post_id)
                 images = await self._repo.get_post_images(session, post_id)
             except Exception:
                 error = PostNotFoundByIdException(id=post_id)

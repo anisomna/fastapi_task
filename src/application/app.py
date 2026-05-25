@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 from application.api.users import users_router
 from application.api.posts import posts_router
@@ -18,6 +19,8 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+    app.mount("/images", StaticFiles(directory="/fastapi_app/images"), name="images")
+    app.mount("/comment_images", StaticFiles(directory="/fastapi_app/comment_images"), name="comment_images")
     app.include_router(users_router, prefix="/users", tags=["User APIs"])
     app.include_router(posts_router,prefix="/posts", tags=["Post APIs"])
     app.include_router(comments_router,prefix="/comments", tags=["Comment APIs"])
